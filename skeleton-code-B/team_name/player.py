@@ -1,5 +1,19 @@
 
+import Graph from Graph
 class Player:
+
+    #global constant 
+    
+    maximum_tokens = 9
+
+
+    #global variable
+    
+    turn = 0
+
+    
+    
+
     def __init__(self, player):
         """
         Called once at the beginning of a game to initialise this player.
@@ -10,6 +24,15 @@ class Player:
         as Lower).
         """
         # put your code here
+        self.graph = Graph()
+        self.side  = player
+        self.throws = 0
+        self.num_tokens = 0
+        self.tokens = {}
+        self.enemy_tokens = {}
+
+        
+        
 
     def action(self):
         """
@@ -17,6 +40,13 @@ class Player:
         of the game, select an action to play this turn.
         """
         # put your code here
+        action_list = []
+
+
+        return action_list
+
+
+
     
     def update(self, opponent_action, player_action):
         """
