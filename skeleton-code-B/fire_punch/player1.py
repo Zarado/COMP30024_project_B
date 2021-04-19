@@ -1,18 +1,14 @@
+from fire_punch.Graph import Graph
 
-import Graph from Graph
+
 class Player:
+    # global constant
 
-    #global constant 
-    
     maximum_tokens = 9
 
+    # global variable
 
-    #global variable
-    
     turn = 0
-
-    
-    
 
     def __init__(self, player):
         """
@@ -25,14 +21,11 @@ class Player:
         """
         # put your code here
         self.graph = Graph()
-        self.side  = player
+        self.side = player
         self.throws = 0
         self.num_tokens = 0
         self.tokens = {}
         self.enemy_tokens = {}
-
-        
-        
 
     def action(self):
         """
@@ -42,12 +35,8 @@ class Player:
         # put your code here
         action_list = []
 
-
         return action_list
 
-
-
-    
     def update(self, opponent_action, player_action):
         """
         Called at the end of each turn to inform this player of both
@@ -57,4 +46,5 @@ class Player:
         and player_action is this instance's latest chosen action.
         """
         # put your code here
+
 

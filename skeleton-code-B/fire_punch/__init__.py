@@ -1,0 +1,1 @@
+from fire_punch.player import Player

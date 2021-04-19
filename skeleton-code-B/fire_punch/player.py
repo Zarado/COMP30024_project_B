@@ -1,19 +1,17 @@
 
-from Graph import Graph 
+
+from fire_punch.Graph import Graph
+from fire_punch.Token import Token
+
 
 class Player:
+    # global constant
 
-    #global constant 
-    
     maximum_tokens = 9
 
+    # global variable
 
-    #global variable
-    
     turn = 0
-
-    
-    
 
     def __init__(self, player):
         """
@@ -26,14 +24,18 @@ class Player:
         """
         # put your code here
         self.graph = Graph()
-        self.side  = player
+        self.side = player
         self.throws = 0
         self.num_tokens = 0
         self.tokens = {}
         self.enemy_tokens = {}
-
-        
-        
+        self.upper = []
+        self.lower = []
+        self.enemy = 'NA'
+        if player == 'upper':
+            self.enemy = 'lower'
+        else:
+            self.enemy = 'upper'
 
     def action(self):
         """
@@ -41,14 +43,23 @@ class Player:
         of the game, select an action to play this turn.
         """
         # put your code here
-        action_list = []
-
-
+        print("input your action: ")
+        action = input()
+        if action == 'THROW':
+            print("input your type: ")
+            spe = input()
+            print("input your destination: ")
+            destination = tuple(eval(input()))
+            action_list = (action, spe, destination)
+        if action == 'SLIDE':
+            print("input your hex: ")
+            start = tuple(eval(input()))
+            print("input your destination: ")
+            destination = tuple(eval(input()))
+            action_list = (action, start, destination)
+        
         return action_list
 
-
-
-    
     def update(self, opponent_action, player_action):
         """
         Called at the end of each turn to inform this player of both
@@ -58,13 +69,12 @@ class Player:
         and player_action is this instance's latest chosen action.
         """
         # put your code here
-        
-        #update the graph
+        self.operate(opponent_action, self.enemy)
+        self.operate(player_action, self.side)
+        self.battle(self.graph.hex_dict.get(opponent_action[2]))
+        self.battle(self.graph.hex_dict.get(opponent_action[2]))
+        # update the graph
 
-        
-    
-    
-    
     def battle(self, current_hex):
         if not current_hex.tokens:
             return 1
@@ -118,3 +128,64 @@ class Player:
                     # print(" lower Rock : {coor}".format(coor = rock.coordinate))
                     if current_hex.get_required_tokens('r'):
                         print("# remove failure")
+
+    def operate(self, action, side):
+
+        if action[0] == 'THROW':
+            if side == 'lower':
+                new_token = Token(action[2], action[1])
+                self.lower.append(new_token)
+            if side == 'upper':
+                new_token = Token(action[2], action[1].upper())
+                self.upper.append(new_token)
+            self.graph.hex_dict.get(action[2]).add_token(new_token)
+
+
+
+        elif action[0] == 'SLIDE':
+            symbol = 'n'
+            if side == 'lower':
+                for token in self.graph.hex_dict.get(action[1]).tokens:
+                    if token.type.islower():
+                        symbol = token.type
+                        token.move(action[2], 2)
+                        self.graph.hex_dict.get(action[1]).tokens.remove(token)
+                        break
+
+            if side == 'upper':
+                for token in self.graph.hex_dict.get(action[1]).tokens:
+                    if token.type.isupper():
+                        symbol = token.type
+                        token.move(action[2], 1)
+                        self.graph.hex_dict.get(action[1]).tokens.remove(token)
+                        break
+
+            new_token = Token(action[2], symbol)
+            self.graph.hex_dict.get(action[2]).tokens.append(new_token)
+
+
+
+        elif action[0] == 'SWING':
+
+            symbol = 'n'
+            if side == 'lower':
+                for token in self.graph.hex_dict.get(action[1]).tokens:
+                    if token.type.islower():
+                        symbol = token.type
+                        token.move(action[2], 1)
+                        self.graph.hex_dict.get(action[1]).tokens.remove(token)
+                        break
+            if side == 'upper':
+                for token in self.graph.hex_dict.get(action[1]).tokens:
+                    if token.type.isUpper():
+                        symbol = token.type
+                        token.move(action[2], 1)
+                        self.graph.hex_dict.get(action[1]).tokens.remove(token)
+                        break
+
+            new_token = Token(action[2], symbol)
+            self.graph.hex_dict.get(action[2]).tokens.append(new_token)
+
+
+player = Player('upper')
+player.action()
