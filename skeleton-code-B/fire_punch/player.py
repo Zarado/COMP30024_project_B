@@ -186,6 +186,3 @@ class Player:
             new_token = Token(action[2], symbol)
             self.graph.hex_dict.get(action[2]).tokens.append(new_token)
 
-
-player = Player('upper')
-player.action()
