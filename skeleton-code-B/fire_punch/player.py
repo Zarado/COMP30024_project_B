@@ -1,7 +1,6 @@
-
-
-from fire_punch.Graph import Graph
+from fire_punch.State import State
 from fire_punch.Token import Token
+import copy
 
 
 class Player:
@@ -23,15 +22,10 @@ class Player:
         as Lower).
         """
         # put your code here
-        self.graph = Graph()
+        # self.graph = Graph()
         self.side = player
-        self.throws = 0
-        self.num_tokens = 0
-        self.tokens = {}
-        self.enemy_tokens = {}
-        self.upper = []
-        self.lower = []
         self.enemy = 'NA'
+        self.state = State()
         if player == 'upper':
             self.enemy = 'lower'
         else:
@@ -57,7 +51,7 @@ class Player:
             print("input your destination: ")
             destination = tuple(eval(input()))
             action_list = (action, start, destination)
-        
+
         return action_list
 
     def update(self, opponent_action, player_action):
@@ -71,118 +65,87 @@ class Player:
         # put your code here
         self.operate(opponent_action, self.enemy)
         self.operate(player_action, self.side)
-        self.battle(self.graph.hex_dict.get(opponent_action[2]))
-        self.battle(self.graph.hex_dict.get(opponent_action[2]))
+        self.battle(opponent_action[2])
+        self.battle(player_action[2])
+        print("------test------")
+        print(self.state.upper_dict.get("S")[0].coordinate)
+        print(self.state.lower_dict.get("s")[0].coordinate)
+        print("------test------")
         # update the graph
 
-    def battle(self, current_hex):
-        if not current_hex.tokens:
-            return 1
-        if current_hex.get_required_tokens('r') and current_hex.get_required_tokens(
-                's') and current_hex.get_required_tokens('p'):
-            for rock in current_hex.get_required_tokens('r'):
-                if rock in self.upper:
-                    self.upper.remove(rock)
-                if rock in self.lower:
-                    self.lower.remove(rock)
-            for scissors in current_hex.get_required_tokens('s'):
-                if scissors in self.upper:
-                    self.upper.remove(scissors)
-                if scissors in self.lower:
-                    self.lower.remove(scissors)
-            for punch in current_hex.get_required_tokens('p'):
-                if punch in self.upper:
-                    self.upper.remove(punch)
-                if punch in self.lower:
-                    self.lower.remove(punch)
-        if current_hex.get_required_tokens('r') and current_hex.get_required_tokens('s'):
-            for scissor in current_hex.get_required_tokens('s'):
-                current_hex.tokens.remove(scissor)
-                if scissor in self.upper:
-                    self.upper.remove(scissor)
-                    # print(" upper Sci : {coor}".format(coor = scissor.coordinate))
-                if scissor in self.lower:
-                    self.lower.remove(scissor)
-                    # print(" lower Sci : {coor}".format(coor = scissor.coordinate))
-                    if current_hex.get_required_tokens('s'):
-                        print("# remove failure")
-        if current_hex.get_required_tokens('s') and current_hex.get_required_tokens('p'):
-            for punch in current_hex.get_required_tokens('p'):
-                current_hex.tokens.remove(punch)
-                if punch in self.upper:
-                    self.upper.remove(punch)
-                    # print(" upper Punch : {coor}".format(coor = punch.coordinate))
-                if punch in self.lower:
-                    self.lower.remove(punch)
-                    # print("lower Punch : {coor}".format(coor = punch.coordinate))
-                    if current_hex.get_required_tokens('p'):
-                        print("remove failure")
-        if current_hex.get_required_tokens('p') and current_hex.get_required_tokens('r'):
-            for rock in current_hex.get_required_tokens('r'):
-                current_hex.tokens.remove(rock)
-                if rock in self.upper:
-                    self.upper.remove(rock)
-                    # print(" upper Rock : {coor}".format(coor = rock.coordinate))
-                if rock in self.lower:
-                    self.lower.remove(rock)
-                    # print(" lower Rock : {coor}".format(coor = rock.coordinate))
-                    if current_hex.get_required_tokens('r'):
-                        print("# remove failure")
+    def battle(self, coordinate):
+        battle_list = []
+        for dict_val in self.state.upper_dict.values():
+            for token in dict_val:
+                if token.coordinate == coordinate:
+                    if token.type.lower() not in battle_list:
+                        battle_list.append(token.type.lower())
+
+        for dict_val in self.state.lower_dict.values():
+            for token in dict_val:
+                if token.coordinate == coordinate:
+                    if token.type not in battle_list:
+                        battle_list.append(token.type.lower())
+
+        if len(battle_list) == 3:
+
+            self.state.remove_coordinate(coordinate, "all")
+
+        if len(battle_list) == 2:
+
+            if "r" in battle_list and "s" in battle_list:
+                self.state.remove_coordinate(coordinate, "s")
+
+            if "r" in battle_list and "p" in battle_list:
+                self.state.remove_coordinate(coordinate, "r")
+
+            if "p" in battle_list and "s" in battle_list:
+                self.state.remove_coordinate(coordinate, "p")
 
     def operate(self, action, side):
 
-        if action[0] == 'THROW':
-            if side == 'lower':
+        if action[0] == "THROW":
+            if side == "lower":
                 new_token = Token(action[2], action[1])
-                self.lower.append(new_token)
-            if side == 'upper':
+                self.state.lower_dict.get(new_token.type).append(new_token)
+            if side == "upper":
                 new_token = Token(action[2], action[1].upper())
-                self.upper.append(new_token)
-            self.graph.hex_dict.get(action[2]).add_token(new_token)
+                self.state.upper_dict.get(new_token.type).append(new_token)
 
+        elif action[0] == "SLIDE":
 
-
-        elif action[0] == 'SLIDE':
-            symbol = 'n'
-            if side == 'lower':
-                for token in self.graph.hex_dict.get(action[1]).tokens:
-                    if token.type.islower():
-                        symbol = token.type
+            if side == "lower":
+                for token in self.state.lower_dict["s"] + self.state.lower_dict["r"] + self.state.lower_dict["p"]:
+                    if token.coordinate == action[1]:
                         token.move(action[2], 2)
-                        self.graph.hex_dict.get(action[1]).tokens.remove(token)
-                        break
 
-            if side == 'upper':
-                for token in self.graph.hex_dict.get(action[1]).tokens:
-                    if token.type.isupper():
-                        symbol = token.type
-                        token.move(action[2], 1)
-                        self.graph.hex_dict.get(action[1]).tokens.remove(token)
-                        break
+            if side == "upper":
+                for token in self.state.upper_dict["S"] + self.state.upper_dict["R"] + self.state.upper_dict["P"]:
+                    if token.coordinate == action[1]:
+                        token.move(action[2], 2)
 
-            new_token = Token(action[2], symbol)
-            self.graph.hex_dict.get(action[2]).tokens.append(new_token)
+        elif action[0] == "SWING":
+
+            if side == "lower":
+                for token in self.state.lower_dict["s"] + self.state.lower_dict["r"] + self.state.lower_dict["p"]:
+                    if token.coordinate == action[1]:
+                        token.move(action[2], 2)
+
+            if side == "upper":
+                for token in self.state.upper_dict["S"] + self.state.upper_dict["R"] + self.state.upper_dict["P"]:
+                    if token.coordinate == action[1]:
+                        token.move(action[2], 2)
 
 
 
-        elif action[0] == 'SWING':
-
-            symbol = 'n'
-            if side == 'lower':
-                for token in self.graph.hex_dict.get(action[1]).tokens:
-                    if token.type.islower():
-                        symbol = token.type
-                        token.move(action[2], 1)
-                        self.graph.hex_dict.get(action[1]).tokens.remove(token)
-                        break
-            if side == 'upper':
-                for token in self.graph.hex_dict.get(action[1]).tokens:
-                    if token.type.isUpper():
-                        symbol = token.type
-                        token.move(action[2], 1)
-                        self.graph.hex_dict.get(action[1]).tokens.remove(token)
-                        break
-
-            new_token = Token(action[2], symbol)
-            self.graph.hex_dict.get(action[2]).tokens.append(new_token)
-
+player = Player("upper")
+player.operate(("THROW", "s", (-3, 0)), "lower")
+player.operate(("THROW", "r", (-3, 0)), "lower")
+player.operate(("THROW", "r", (-3, 0)), "lower")
+print(player.state.lower_dict)
+print(player.state.upper_dict)
+print("--------")
+player.battle((-3, 0))
+print(player.state.lower_dict)
+print(player.state.upper_dict)
+print("----end----")
