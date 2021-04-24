@@ -47,6 +47,8 @@ def find_legal_operations(state, side):
                     to_swing = list( set(adjacent_token(other_token)) - set(to_slide) - {token.coordinate} )
                     for swing in to_swing:
                         action_list.get("SWING").append(("SWING",(token.coordinate),(swing)))
+    
+    return action_list
 
 
 
