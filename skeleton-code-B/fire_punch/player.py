@@ -22,7 +22,6 @@ class Player:
         as Lower).
         """
         # put your code here
-        # self.graph = Graph()
         self.side = player
         self.enemy = 'NA'
         self.state = State()
@@ -88,7 +87,6 @@ class Player:
                         battle_list.append(token.type.lower())
 
         if len(battle_list) == 3:
-
             self.state.remove_coordinate(coordinate, "all")
 
         if len(battle_list) == 2:
@@ -112,7 +110,7 @@ class Player:
                 new_token = Token(action[2], action[1].upper())
                 self.state.upper_dict.get(new_token.type).append(new_token)
 
-        elif action[0] == "SLIDE":
+        elif action[0] == "SLIDE" or "SWING":
 
             if side == "lower":
                 for token in self.state.lower_dict["s"] + self.state.lower_dict["r"] + self.state.lower_dict["p"]:
@@ -123,19 +121,6 @@ class Player:
                 for token in self.state.upper_dict["S"] + self.state.upper_dict["R"] + self.state.upper_dict["P"]:
                     if token.coordinate == action[1]:
                         token.move(action[2], 2)
-
-        elif action[0] == "SWING":
-
-            if side == "lower":
-                for token in self.state.lower_dict["s"] + self.state.lower_dict["r"] + self.state.lower_dict["p"]:
-                    if token.coordinate == action[1]:
-                        token.move(action[2], 2)
-
-            if side == "upper":
-                for token in self.state.upper_dict["S"] + self.state.upper_dict["R"] + self.state.upper_dict["P"]:
-                    if token.coordinate == action[1]:
-                        token.move(action[2], 2)
-
 
 
 player = Player("upper")
