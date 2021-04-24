@@ -1,8 +1,9 @@
+
 class State:
     def __init__(self):
         self.upper_dict = {"R": [], "P": [], "S": []}
         self.lower_dict = {"r": [], "p": [], "s": []}
-        self.throw_left = 9
+        self.throws_left = [9, 9]
 
     def remove_coordinate(self, coordinate, spices):
         if spices == "all":

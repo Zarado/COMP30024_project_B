@@ -1,6 +1,6 @@
 from fire_punch.State import State
 from fire_punch.Token import Token
-import copy
+from fire_punch.utils import find_legal_operations
 
 
 class Player:
@@ -106,9 +106,11 @@ class Player:
             if side == "lower":
                 new_token = Token(action[2], action[1])
                 self.state.lower_dict.get(new_token.type).append(new_token)
+                self.state.throws_left[0] -= 1
             if side == "upper":
                 new_token = Token(action[2], action[1].upper())
                 self.state.upper_dict.get(new_token.type).append(new_token)
+                self.state.throws_left[1] -= 1
 
         elif action[0] == "SLIDE" or "SWING":
 
@@ -125,12 +127,6 @@ class Player:
 
 player = Player("upper")
 player.operate(("THROW", "s", (-3, 0)), "lower")
-player.operate(("THROW", "r", (-3, 0)), "lower")
-player.operate(("THROW", "r", (-3, 0)), "lower")
 print(player.state.lower_dict)
-print(player.state.upper_dict)
 print("--------")
-player.battle((-3, 0))
-print(player.state.lower_dict)
-print(player.state.upper_dict)
-print("----end----")
+print(find_legal_operations(player.state, 0))
