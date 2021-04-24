@@ -66,10 +66,6 @@ class Player:
         self.operate(player_action, self.side)
         self.battle(opponent_action[2])
         self.battle(player_action[2])
-        print("------test------")
-        print(self.state.upper_dict.get("S")[0].coordinate)
-        print(self.state.lower_dict.get("s")[0].coordinate)
-        print("------test------")
         # update the graph
 
     def battle(self, coordinate):
@@ -130,3 +126,4 @@ player.operate(("THROW", "s", (-3, 0)), "lower")
 print(player.state.lower_dict)
 print("--------")
 print(find_legal_operations(player.state, 0))
+print("----end----")
