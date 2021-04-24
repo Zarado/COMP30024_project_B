@@ -6,7 +6,7 @@ from Token import Token
 
 def find_legal_operations(state, side):
     
-    action_list = {"throw":[], "slide":[], "swing":[]}
+    action_list = {"THROW":[], "SLIDE":[], "SWING":[]}
 
     #generate the throw 
     Hex_range = range(-4,4 + 1)
@@ -22,7 +22,7 @@ def find_legal_operations(state, side):
             for q in Hex_range:
                 if -r - q in Hex_range:
                     for token_type in type_token:
-                        action_list.get("throw").append(("THROW",token_type,(r,q)))
+                        action_list.get("THROW").append(("THROW",token_type,(r,q)))
 
     
     #generate the slide 
@@ -41,12 +41,12 @@ def find_legal_operations(state, side):
     for token in token_list:
         to_slide  = adjacent_token(token)
         for to_go in to_slide:
-            action_list.get("slide").append(("SLIDE",(token.coordinate),(to_go)))
+            action_list.get("SLIDE").append(("SLIDE",(token.coordinate),(to_go)))
             for other_token in token_list:
                 if other_token.coordinate == to_go:
                     to_swing = list( set(adjacent_token(other_token)) - set(to_slide) - {token.coordinate} )
                     for swing in to_swing:
-                        action_list.append(("SWING",(token.coordinate),(swing)))
+                        action_list.get("SWING").append(("SWING",(token.coordinate),(swing)))
 
 
 
@@ -76,10 +76,10 @@ def evaluation(state,side):
     our_tokens = {}
     opponent_tokens = {}
 
-    pair_num = 0
+    pair_num_defeat = [0,0,0]
     
-    relatively_distance1 = 0
-    relatively_distance2 = 0
+    relatively_distance1 = [0,0,0]
+    relatively_distance2 = [0,0,0]
     
     weight1 = 1
     weight2 = -1
@@ -91,9 +91,11 @@ def evaluation(state,side):
         our_tokens = state.lower_dict
         opponent_tokens = state.upper_dict
 
+    i = 0
     for (strong,weak) in defeat.items():
-        pair_num = min(len(our_tokens.get(strong.upper())), len(opponent_tokens.get(weak)) )
+        pair_num_defeat[i] = min(len(our_tokens.get(strong.upper())), len(opponent_tokens.get(weak)) )
         relatively_distance1 = find_relative_distance(our_tokens.get(strong.upper()), opponent_tokens.get(weak))
+        i += 1
     
 
 
