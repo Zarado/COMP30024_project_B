@@ -71,39 +71,97 @@ def adjacent_token(token):
 
 
 def evaluation(state,side):
+
+    evaluation_point = 0
     
     defeat = {"r": "s", "p": "r", "s": "p"}
     defeated = {"r": "p", "p": "s", "s": "r"}
 
-    our_tokens = {}
-    opponent_tokens = {}
+    upper_tokens = state.upper_dict
+    lower_tokens = state.lower_dict
 
-    pair_num_defeat = [0,0,0]
+    pair_num_defeat1 = [0,0,0]
+    pair_num_defeat2 = [0,0,0]
     
     relatively_distance1 = [0,0,0]
     relatively_distance2 = [0,0,0]
     
-    weight1 = 1
-    weight2 = -1
+    weight1 = [-1,1]
+    weight2 = [1,-1]
 
-    if side == 1 :
-        our_tokens = state.upper_dict
-        opponent_tokens = state.lower_dict
-    else:
-        our_tokens = state.lower_dict
-        opponent_tokens = state.upper_dict
-
+    
     i = 0
+    
     for (strong,weak) in defeat.items():
-        pair_num_defeat[i] = min(len(our_tokens.get(strong.upper())), len(opponent_tokens.get(weak)) )
-        relatively_distance1 = find_relative_distance(our_tokens.get(strong.upper()), opponent_tokens.get(weak))
+
+        pair_num_defeat1[i] = min(len(upper_tokens.get(strong.upper())), len(lower_tokens.get(weak)) )
+        if pair_num_defeat1[i] !=  0:
+            relatively_distance1[i] = find_relative_distance(upper_tokens.get(strong.upper()), lower_tokens.get(weak))
         i += 1
     
+    j = 0
 
 
-
-def find_relative_distance(our_tokens, opponent_tokens):
-
-    return 1
+    for (weak,strong) in defeated.items():
 
 
+        pair_num_defeat2[j] = min(len(upper_tokens.get(weak.upper())), len(lower_tokens.get(strong)) )
+        if pair_num_defeat2[j] != 0:
+            relatively_distance2[j] = find_relative_distance(upper_tokens.get(weak.upper()), lower_tokens.get(strong))
+        j += 1
+    
+    
+    
+    for k in range(0,3):
+        
+        evaluation_point += (weight1[side]*pair_num_defeat1[k]*relatively_distance1[k] + weight2[side]*pair_num_defeat2[k]*relatively_distance2[k])
+    
+    #predict part 
+
+    throw_dif = state.throws_left[0] - state.throws_left[1]
+    if side:
+        throw_dif *= -1
+    evaluation_point += throw_dif
+
+    return evaluation_point
+
+
+def find_relative_distance(upper_tokens, lower_tokens):
+
+    total_distance = 0
+
+
+    for our in upper_tokens:
+        for opponent in lower_tokens:
+            total_distance += find_distance(our,opponent)
+
+    #negative relative 
+    return 10 - (total_distance/(len(upper_tokens)*len(lower_tokens)))
+
+
+def find_distance(start, end):
+
+
+    dis = abs(start.coordinate[0] - end.coordinate[0]) + abs(start.coordinate[1] - end.coordinate[1]) + abs(
+        start.coordinate[0] - end.coordinate[0] + start.coordinate[1] - end.coordinate[1]) - max(
+        abs(start.coordinate[0] - end.coordinate[0]), abs(start.coordinate[1] - end.coordinate[1]),
+        abs(start.coordinate[0] - end.coordinate[0] + start.coordinate[1] - end.coordinate[1]))
+    return dis
+
+'''
+
+ts = State()
+ts.upper_dict.get("R").append(Token((4,-4),"R"))
+ts.upper_dict.get("S").append(Token((3,-3),"S"))
+
+ts.lower_dict.get("s").append(Token((-4,0),"s"))
+ts.lower_dict.get("s").append(Token((-4,4),"s"))
+ts.lower_dict.get("p").append(Token((-2,-2),"p"))
+
+ts.throws_left[0] = 6
+ts.throws_left[1] = 7
+
+print(evaluation(ts,1))
+
+
+'''
