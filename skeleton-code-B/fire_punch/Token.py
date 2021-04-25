@@ -12,15 +12,17 @@ class Token:
     '''
 
     def move(self, dest_coordinate, distance):
+        self.coordinate = dest_coordinate
 
-        if distance > 1:
+    '''
+    if distance > 1:
             print('SWING from ({ax},{ay}) to ({bx},{by})'.format(ax=self.coordinate[0], ay=self.coordinate[1],
                                                                  bx=dest_coordinate[0], by=dest_coordinate[1]))
 
         else:
             print('SLIDE from ({ax},{ay}) to ({bx},{by})'.format(ax=self.coordinate[0], ay=self.coordinate[1],
                                                                  bx=dest_coordinate[0], by=dest_coordinate[1]))
-        self.coordinate = dest_coordinate
+        '''
 
     # check if the current token can defeat the input token.
     def defeat(self, enemy):

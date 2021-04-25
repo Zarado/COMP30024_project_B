@@ -1,6 +1,8 @@
 from fire_punch.State import State
 from fire_punch.Token import Token
 from fire_punch.utils import find_legal_operations
+from fire_punch.utils import evaluation
+import copy
 
 
 class Player:
@@ -22,13 +24,15 @@ class Player:
         as Lower).
         """
         # put your code here
-        self.side = player
-        self.enemy = 'NA'
+        self.enemy = -1
+        self.side = -1
         self.state = State()
         if player == 'upper':
-            self.enemy = 'lower'
+            self.side = 1
+            self.enemy = 0
         else:
-            self.enemy = 'upper'
+            self.side = 0
+            self.enemy = 1
 
     def action(self):
         """
@@ -62,8 +66,8 @@ class Player:
         and player_action is this instance's latest chosen action.
         """
         # put your code here
-        self.operate(opponent_action, self.enemy)
-        self.operate(player_action, self.side)
+        self.state.operate(opponent_action, self.enemy)
+        self.state.operate(player_action, self.side)
         self.battle(opponent_action[2])
         self.battle(player_action[2])
         # update the graph
@@ -96,6 +100,8 @@ class Player:
             if "p" in battle_list and "s" in battle_list:
                 self.state.remove_coordinate(coordinate, "p")
 
+
+'''
     def operate(self, action, side):
 
         if action[0] == "THROW":
@@ -119,11 +125,84 @@ class Player:
                 for token in self.state.upper_dict["S"] + self.state.upper_dict["R"] + self.state.upper_dict["P"]:
                     if token.coordinate == action[1]:
                         token.move(action[2], 2)
+             '''
+
+
+def re_minimax(state, depth, max_player, side):
+    if depth == 0:
+        return evaluation(state, side), state
+
+    if max_player:
+        cur_max = float('-inf')
+        best_move = None
+        for new_board in simulation(state, side):
+            utility = re_minimax(new_board[0], depth - 1, False, side)[0]
+            cur_max = max(cur_max, utility)
+            if cur_max == utility:
+                best_move = new_board[1]
+
+        return cur_max, best_move
+    else:
+        cur_min = float('inf')
+        best_move = None
+        for new_board in simulation(state, 1 - side):
+            utility = re_minimax(new_board[0], depth - 1, True, side)[0]
+            cur_min = min(cur_min, utility)
+            if cur_min == utility:
+                best_move = new_board[1]
+
+        return cur_min, best_move
+
+
+def minimax(state):
+    upper_action = {}
+    lower_action = {}
+    upper_moves = []
+    lower_moves = []
+    pivot = 0
+
+    for moves in find_legal_operations(state, 1).values():
+        upper_moves = upper_moves + moves
+
+    for moves in find_legal_operations(state, 0).values():
+        lower_moves = lower_moves + moves
+
+    for actions in upper_moves:
+        simulation = copy.deepcopy(state)
+        simulation.operate(actions, 1)
+        for lower_actions in lower_moves:
+            simulation1 = copy.deepcopy(simulation)
+            simulation1.operate(lower_actions, 0)
+            lower_action[pivot] = evaluation(simulation1, 1)
+            pivot += 1
+        upper_action[upper_moves.index(actions)] = min(lower_action.items(), key=lambda x: x[1])
+        lower_action = {}
+        pivot = 0
+    result = max(upper_action.items(), key=lambda x: x[1])
+    return result[1][1], upper_moves[result[0]]
+
+
+def simulation(state, side):
+    moves = []
+    after_move = []
+    for action in find_legal_operations(state, side).values():
+        moves = moves + action
+    for action in moves:
+        new_state = copy.deepcopy(state)
+        new_state.operate(action, side)
+        new_state.battle(action[2])
+        after_move.append([new_state, action])
+    return after_move
 
 
 player = Player("upper")
-player.operate(("THROW", "s", (-3, 0)), "lower")
-print(player.state.lower_dict)
-print("--------")
-print(find_legal_operations(player.state, 0))
-print("----end----")
+player.state.operate(("THROW", "s", (4, -4)), 1)
+player.state.operate(("THROW", "p", (-4, 0)), 0)
+print(minimax(player.state))
+print(re_minimax(player.state, 2, True, 1))
+
+print("------end------")
+
+# only throw action
+
+# distinguish side
