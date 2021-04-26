@@ -30,6 +30,7 @@ def find_legal_operations(state, side):
    
 
     token_list = []
+
     if side == 1:
         for tok_list in state.upper_dict.values():
             token_list + tok_list
@@ -148,7 +149,7 @@ def find_distance(start, end):
         abs(start.coordinate[0] - end.coordinate[0] + start.coordinate[1] - end.coordinate[1]))
     return dis
 
-'''
+
 
 ts = State()
 ts.upper_dict.get("R").append(Token((4,-4),"R"))
@@ -161,7 +162,5 @@ ts.lower_dict.get("p").append(Token((-2,-2),"p"))
 ts.throws_left[0] = 6
 ts.throws_left[1] = 7
 
-print(evaluation(ts,1))
 
 
-'''
