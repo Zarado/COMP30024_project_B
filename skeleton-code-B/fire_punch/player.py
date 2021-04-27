@@ -40,6 +40,7 @@ class Player:
         of the game, select an action to play this turn.
         """
         # put your code here
+        """
         print("input your action: ")
         action = input()
         if action == 'THROW':
@@ -54,8 +55,9 @@ class Player:
             print("input your destination: ")
             destination = tuple(eval(input()))
             action_list = (action, start, destination)
+        """
 
-        return action_list
+        return alpha_beta_minimax(self.state, 2, True, self.side, float('-inf'), float('inf'))[1]
 
     def update(self, opponent_action, player_action):
         """
@@ -68,64 +70,9 @@ class Player:
         # put your code here
         self.state.operate(opponent_action, self.enemy)
         self.state.operate(player_action, self.side)
-        self.battle(opponent_action[2])
-        self.battle(player_action[2])
+        self.state.battle(opponent_action[2])
+        self.state.battle(player_action[2])
         # update the graph
-
-    def battle(self, coordinate):
-        battle_list = []
-        for dict_val in self.state.upper_dict.values():
-            for token in dict_val:
-                if token.coordinate == coordinate:
-                    if token.type.lower() not in battle_list:
-                        battle_list.append(token.type.lower())
-
-        for dict_val in self.state.lower_dict.values():
-            for token in dict_val:
-                if token.coordinate == coordinate:
-                    if token.type not in battle_list:
-                        battle_list.append(token.type.lower())
-
-        if len(battle_list) == 3:
-            self.state.remove_coordinate(coordinate, "all")
-
-        if len(battle_list) == 2:
-
-            if "r" in battle_list and "s" in battle_list:
-                self.state.remove_coordinate(coordinate, "s")
-
-            if "r" in battle_list and "p" in battle_list:
-                self.state.remove_coordinate(coordinate, "r")
-
-            if "p" in battle_list and "s" in battle_list:
-                self.state.remove_coordinate(coordinate, "p")
-
-
-'''
-    def operate(self, action, side):
-
-        if action[0] == "THROW":
-            if side == "lower":
-                new_token = Token(action[2], action[1])
-                self.state.lower_dict.get(new_token.type).append(new_token)
-                self.state.throws_left[0] -= 1
-            if side == "upper":
-                new_token = Token(action[2], action[1].upper())
-                self.state.upper_dict.get(new_token.type).append(new_token)
-                self.state.throws_left[1] -= 1
-
-        elif action[0] == "SLIDE" or "SWING":
-
-            if side == "lower":
-                for token in self.state.lower_dict["s"] + self.state.lower_dict["r"] + self.state.lower_dict["p"]:
-                    if token.coordinate == action[1]:
-                        token.move(action[2], 2)
-
-            if side == "upper":
-                for token in self.state.upper_dict["S"] + self.state.upper_dict["R"] + self.state.upper_dict["P"]:
-                    if token.coordinate == action[1]:
-                        token.move(action[2], 2)
-             '''
 
 
 def re_minimax(state, depth, max_player, side):
@@ -154,32 +101,35 @@ def re_minimax(state, depth, max_player, side):
         return cur_min, best_move
 
 
-def minimax(state):
-    upper_action = {}
-    lower_action = {}
-    upper_moves = []
-    lower_moves = []
-    pivot = 0
+def alpha_beta_minimax(state, depth, max_player, side, alpha, beta):
+    if depth == 0 or check_win_draw(state):
+        return evaluation(state, side), state
 
-    for moves in find_legal_operations(state, 1).values():
-        upper_moves = upper_moves + moves
+    if max_player:
+        cur_max = float('-inf')
+        best_move = None
+        for new_board in simulation(state, side):
+            utility = alpha_beta_minimax(new_board[0], depth - 1, False, side, alpha, beta)[0]
+            cur_max = max(cur_max, utility)
+            if cur_max == utility:
+                best_move = new_board[1]
+            alpha = max(alpha, utility)
+            if beta <= alpha:
+                break
+        return cur_max, best_move
 
-    for moves in find_legal_operations(state, 0).values():
-        lower_moves = lower_moves + moves
-
-    for actions in upper_moves:
-        simulation = copy.deepcopy(state)
-        simulation.operate(actions, 1)
-        for lower_actions in lower_moves:
-            simulation1 = copy.deepcopy(simulation)
-            simulation1.operate(lower_actions, 0)
-            lower_action[pivot] = evaluation(simulation1, 1)
-            pivot += 1
-        upper_action[upper_moves.index(actions)] = min(lower_action.items(), key=lambda x: x[1])
-        lower_action = {}
-        pivot = 0
-    result = max(upper_action.items(), key=lambda x: x[1])
-    return result[1][1], upper_moves[result[0]]
+    else:
+        cur_min = float('inf')
+        best_move = None
+        for new_board in simulation(state, 1 - side):
+            utility = alpha_beta_minimax(new_board[0], depth - 1, True, side, alpha, beta)[0]
+            cur_min = min(utility, cur_min)
+            if cur_min == utility:
+                best_move = new_board[1]
+            beta = min(beta, utility)
+            if beta <= alpha:
+                break
+        return cur_min, best_move
 
 
 def simulation(state, side):
@@ -195,12 +145,34 @@ def simulation(state, side):
     return after_move
 
 
+def check_win_draw(state):
+    flag = False
+    upper_tokens = []
+    lower_tokens = []
+    for tokens in state.upper_dict.values():
+        upper_tokens.append(tokens)
+    for tokens in state.lower_dict.values():
+        lower_tokens.append(tokens)
+
+    up_notoks = len(upper_tokens) == 0 and state.throws_left[1] == 0
+    lo_notoks = len(lower_tokens) == 0 and state.throws_left[0] == 0
+
+    if up_notoks:
+        flag = True
+    if lo_notoks:
+        flag = True
+
+    return flag
+
+
+
+
 player = Player("upper")
 player.state.operate(("THROW", "s", (4, -4)), 1)
 player.state.operate(("THROW", "p", (-4, 0)), 0)
-print(minimax(player.state))
-print(re_minimax(player.state, 2, True, 1))
 
+print(re_minimax(player.state, 2, True, 1))
+print(alpha_beta_minimax(player.state, 2, True, 1, float('-inf'), float('inf')))
 print("------end------")
 
 # only throw action

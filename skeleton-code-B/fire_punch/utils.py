@@ -1,5 +1,5 @@
-from State import State
-from Token import Token
+from fire_punch.State import State
+from fire_punch.Token import Token
 
 
 
@@ -37,7 +37,7 @@ def find_legal_operations(state, side):
         for tok_list in state.lower_dict.values():
             token_list += tok_list
 
-    print(token_list)
+    #print(token_list)
     for token in token_list:
         to_slide  = adjacent_token(token)
         for to_go in to_slide:
