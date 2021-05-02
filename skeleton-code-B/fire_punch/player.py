@@ -102,7 +102,7 @@ def re_minimax(state, depth, max_player, side):
 
 
 def alpha_beta_minimax(state, depth, max_player, side, alpha, beta):
-    if depth == 0 or check_win_draw(state):
+    if depth == 0 or check_win(state):
         return evaluation(state, side), state
 
     if max_player:
@@ -132,6 +132,24 @@ def alpha_beta_minimax(state, depth, max_player, side, alpha, beta):
         return cur_min, best_move
 
 
+# -------------------------------------------double oracle---------------------------------------------
+def double_oracle(state, lower_bound, upper_bound, side):
+    if check_win(state):
+        return evaluation(state, side)
+    upper_list = []
+    lower_list = []
+    for action in find_legal_operations(state, 1).values():
+        upper_list = upper_list + action
+    for action in find_legal_operations(state, 0).values():
+        lower_list = lower_list + action
+    
+
+
+
+
+# -------------------------------------------helper---------------------------------------------
+
+
 def simulation(state, side):
     moves = []
     after_move = []
@@ -145,7 +163,7 @@ def simulation(state, side):
     return after_move
 
 
-def check_win_draw(state):
+def check_win(state):
     flag = False
     upper_tokens = []
     lower_tokens = []
@@ -165,16 +183,10 @@ def check_win_draw(state):
     return flag
 
 
-
-
 player = Player("upper")
 player.state.operate(("THROW", "s", (4, -4)), 1)
 player.state.operate(("THROW", "p", (-4, 0)), 0)
-
+counter = 0
 print(re_minimax(player.state, 2, True, 1))
 print(alpha_beta_minimax(player.state, 2, True, 1, float('-inf'), float('inf')))
 print("------end------")
-
-# only throw action
-
-# distinguish side
