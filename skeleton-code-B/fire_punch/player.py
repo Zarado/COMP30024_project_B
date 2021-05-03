@@ -136,13 +136,28 @@ def alpha_beta_minimax(state, depth, max_player, side, alpha, beta):
 def double_oracle(state, lower_bound, upper_bound, side):
     if check_win(state):
         return evaluation(state, side)
+    if alpha_beta_minimax(state, 2, True, side, float('-inf'), float('inf')) == alpha_beta_minimax(
+            state, 2, False, 1 - side, float('-inf'), float('inf')):
+        return alpha_beta_minimax(state, 2, True, side, float('-inf'), float('inf'))
     upper_list = []
     lower_list = []
+    p = []
+    o = []
     for action in find_legal_operations(state, 1).values():
         upper_list = upper_list + action
     for action in find_legal_operations(state, 0).values():
         lower_list = lower_list + action
-    
+    for i in range(0, len(upper_list)):
+        for j in range(0, len(lower_list)):
+            new_state = copy.deepcopy(state)
+            new_state.operate(upper_list[i], 0)
+            new_state.battle(upper_list[2][2])
+            new_state.operate(lower_list[j], 1)
+            new_state.battle(lower_list[2][2])
+            p[i][j] = alpha_beta_minimax(state, 2, False, 1 - side, float('-inf'), float('inf'))
+            o[i][j] = alpha_beta_minimax(state, 2, True, side, float('-inf'), float('inf'))
+
+
 
 
 
