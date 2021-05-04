@@ -1,4 +1,4 @@
-from fire_punch.Token import Token
+from random_player.Token import Token
 
 
 class State:
@@ -20,18 +20,18 @@ class State:
         else:
             for key in self.upper_dict.keys():
                 for token in self.upper_dict.get(key):
-                    if token.coordinate == coordinate and token.type == spices.upper():
+                    if token.coordinate == coordinate and token.type.lower() == spices:
                         self.upper_dict.get(key).remove(token)
             for key in self.lower_dict.keys():
                 for token in self.lower_dict.get(key):
-                    if token.coordinate == coordinate and token.type == spices.lower():
+                    if token.coordinate == coordinate and token.type.lower() == spices:
                         self.lower_dict.get(key).remove(token)
 
     def operate(self, action, side):
 
         if action[0] == "THROW":
             if side == 0:
-                new_token = Token(action[2], action[1].lower())
+                new_token = Token(action[2], action[1])
                 self.lower_dict.get(new_token.type).append(new_token)
                 self.throws_left[0] -= 1
             if side == 1:
@@ -64,8 +64,10 @@ class State:
         for dict_val in self.lower_dict.values():
             for token in dict_val:
                 if token.coordinate == coordinate:
-                    if token.type.lower() not in battle_list:
+                    if token.type not in battle_list:
                         battle_list.append(token.type.lower())
+
+        print(battle_list)
 
         if len(battle_list) == 3:
             self.remove_coordinate(coordinate, "all")
