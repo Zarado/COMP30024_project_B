@@ -121,7 +121,7 @@ def alpha_beta_minimax_limit(state, depth, max_player, side, alpha, beta, max_mo
         return cur_min, best_move
 
 
-def alpha_beta_minimax(state, depth, max_player, side, alpha, beta):
+def alpha_beta_minimax(state, depth, max_player, side, alpha, beta, count=0):
     if depth == 0 or check_win(state):
         return evaluation(state, side), state
 
@@ -129,7 +129,9 @@ def alpha_beta_minimax(state, depth, max_player, side, alpha, beta):
         cur_max = float('-inf')
         best_move = None
         for new_board in simulation(state, side, []):
-            utility = alpha_beta_minimax(new_board[0], depth - 1, False, side, alpha, beta)[0]
+            utility = alpha_beta_minimax(new_board[0], depth - 1, False, side, alpha, beta, count)[0]
+            count+=1
+            print(count)
             cur_max = max(cur_max, utility)
             if cur_max == utility:
                 best_move = new_board[1]
@@ -142,7 +144,9 @@ def alpha_beta_minimax(state, depth, max_player, side, alpha, beta):
         cur_min = float('inf')
         best_move = None
         for new_board in simulation(state, 1 - side, []):
-            utility = alpha_beta_minimax(new_board[0], depth - 1, True, side, alpha, beta)[0]
+            utility = alpha_beta_minimax(new_board[0], depth - 1, True, side, alpha, beta, count)[0]
+            count+=1
+            print(count)
             cur_min = min(utility, cur_min)
             if cur_min == utility:
                 best_move = new_board[1]
@@ -234,7 +238,7 @@ def double_oracle(state, alpha, beta, side):
         return utility
 
         
-
+        
 
 def BR_max(state, alpha, y, side):
     br = alpha
@@ -349,6 +353,6 @@ player.state.operate(("THROW", "s", (4, -4)), 1)
 player.state.operate(("THROW", "p", (-4, 0)), 0)
 counter = [1]
 
-print(alpha_beta_minimax_limit(player.state, 3, True, 1, float('-inf'), float('inf'), [('THROW', 's', (3, 1))], [], 0))
-print(alpha_beta_minimax_limit(player.state, 3, False, 1, float('-inf'), float('inf'), [], [('THROW', 's', (-3, 4))], 0))
+print(alpha_beta_minimax(player.state, 4, True, 1, float('-inf'), float('inf')))
+print(alpha_beta_minimax(player.state, 4, False, 1, float('-inf'), float('inf')))
 print("------end------")
