@@ -135,7 +135,7 @@ def alpha_beta_minimax(state, depth, max_player, side, alpha, beta, count=0):
         for new_board in simulation(state, side, []):
             utility = alpha_beta_minimax(new_board[0], depth - 1, False, side, alpha, beta, count)[0]
             count+=1
-            print(count)
+            #print(count)
             cur_max = max(cur_max, utility)
             if cur_max == utility:
                 best_move = new_board[1]
@@ -150,7 +150,7 @@ def alpha_beta_minimax(state, depth, max_player, side, alpha, beta, count=0):
         for new_board in simulation(state, 1 - side, []):
             utility = alpha_beta_minimax(new_board[0], depth - 1, True, side, alpha, beta, count)[0]
             count+=1
-            print(count)
+            #print(count)
             cur_min = min(utility, cur_min)
             if cur_min == utility:
                 best_move = new_board[1]
