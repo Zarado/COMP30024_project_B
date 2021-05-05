@@ -6,12 +6,14 @@ from fire_punch.utils import compute_matrix
 from fire_punch.utils import get_expected_value
 from fire_punch.utils import estimate_evaluation
 from fire_punch.utils import new_turn
+import sys
+
 
 import numpy as np
 
 import copy
 
-
+sys.app
 class Player:
     # global constant
 
@@ -182,7 +184,7 @@ def double_oracle(state, alpha, beta, side):
     #find arbitrary move
     my_move = [('THROW', 'r', (4, -4))]
     ad_move = [('THROW', 'r', (-4, 0))]
-    new_state = simultaneous_move(state, my_move[0], ad_move[0][1], side)
+    new_state = simultaneous_move(state, my_move[0], ad_move[0], side)
 
     #key : actions i, value : [ui,j]
     pIJ = alpha_beta_minimax_limit(new_state, 2, False, side, max_val, min_val, my_move, ad_move )[0]
@@ -238,8 +240,8 @@ def double_oracle(state, alpha, beta, side):
         beta = min(beta, bsmax[1])
 
         #add the new action to the actions list 
-        my_move.append( bsmax[0])
-        ad_move.append( bsmin[0])
+        my_move.append( bsmax[0] )
+        ad_move.append( bsmin[0] )
 
         return utility
 
@@ -267,12 +269,12 @@ def BR_max(state, alpha, y, side):
         p = [ piJ for i in range(0, len(y)  )]
         o = [ oiJ for i in range(0, len(y)  )]
         
-        utility = np.zeors(len(y))
+        utility = np.zeros(len(y))
         j = 0
 
         if list(y.values())[j] > 0 and p[j] < o[j]:
             
-            for action,prob in y:
+            for action,prob in y.items():
 
                 pij_estimate = max(p[j], br - estimate_evaluation(y, o[j], action) )
 
@@ -315,12 +317,12 @@ def BR_min(state, beta, x, side):
         p = [ piJ for i in range(0, len(x))]
         o = [ oiJ for i in range(0, len(x))]
         
-        utility = np.zeors(len(x))
+        utility = np.zeros(len(x))
         j = 0
 
         if list(x.values())[j]> 0 and p[j] < o[j]:
             
-            for action,prob in x:
+            for action,prob in x.items():
 
                 pij_estimate = max(p[j], br - estimate_evaluation(x, o[j], action) )
 

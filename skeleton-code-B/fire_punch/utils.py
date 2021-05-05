@@ -274,7 +274,7 @@ def get_expected_value(strategy, value_list):
 
     index = 0
     
-    for action,prob in strategy:
+    for action,prob in strategy.items():
         expected += prob * value_list[index]
         index += 1
     return expected
@@ -285,7 +285,7 @@ def estimate_evaluation(strategy, optimistic_list, exception):
 
     index = 0
 
-    for action,prob in strategy:
+    for action,prob in strategy.items():
 
         if action != action:
             estimated += prob* optimistic_list[index]
