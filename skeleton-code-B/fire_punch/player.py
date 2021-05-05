@@ -136,9 +136,10 @@ def alpha_beta_minimax(state, depth, max_player, side, alpha, beta):
 def double_oracle(state, lower_bound, upper_bound, side):
     if check_win(state):
         return evaluation(state, side)
-    if alpha_beta_minimax(state, 2, True, side, float('-inf'), float('inf')) == alpha_beta_minimax(
-            state, 2, False, 1 - side, float('-inf'), float('inf')):
-        return alpha_beta_minimax(state, 2, True, side, float('-inf'), float('inf'))
+    minval = alpha_beta_minimax(state, 2, False, side, float('-inf'), float('inf'))[0]
+    maxval = alpha_beta_minimax(state, 2, True, side, float('-inf'), float('inf'))[0]
+    if minval == maxval:
+        return maxval
     upper_list = []
     lower_list = []
     p = []
