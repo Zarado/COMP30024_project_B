@@ -133,7 +133,7 @@ def alpha_beta_minimax(state, depth, max_player, side, alpha, beta, count=0):
         for new_board in simulation(state, side, []):
             utility = alpha_beta_minimax(new_board[0], depth - 1, False, side, alpha, beta, count)[0]
             count+=1
-            print(count)
+            #print(count)
             cur_max = max(cur_max, utility)
             if cur_max == utility:
                 best_move = new_board[1]
@@ -148,7 +148,7 @@ def alpha_beta_minimax(state, depth, max_player, side, alpha, beta, count=0):
         for new_board in simulation(state, 1 - side, []):
             utility = alpha_beta_minimax(new_board[0], depth - 1, True, side, alpha, beta, count)[0]
             count+=1
-            print(count)
+            #print(count)
             cur_min = min(utility, cur_min)
             if cur_min == utility:
                 best_move = new_board[1]
@@ -165,7 +165,7 @@ def double_oracle(state, alpha, beta, side):
 
     oppnent = 0
     if not side:
-        oppnent
+        oppnent = 1
     
     if check_win(state):
         utility = evaluation(state, side)
@@ -185,8 +185,8 @@ def double_oracle(state, alpha, beta, side):
     new_state = simultaneous_move(state, my_move[0], ad_move[0], side)
 
     #key : actions i, value : [ui,j]
-    pIJ = alpha_beta_minimax_limit(new_state, 2, False, side, max_val, min_val, my_move, ad_move )[0]
-    oIJ = alpha_beta_minimax_limit(new_state, 2, True, side, max_val, min_val,  my_move, ad_move )[0]
+    pIJ = alpha_beta_minimax_limit(new_state, 2, False, side, max_val, min_val, copy.deepcopy(my_move), copy.deepcopy(ad_move))[0]
+    oIJ = alpha_beta_minimax_limit(new_state, 2, True, side, max_val, min_val,  copy.deepcopy(my_move), copy.deepcopy(ad_move))[0]
 
 
     #initialize the boundary of the first abitary actions 
@@ -221,13 +221,14 @@ def double_oracle(state, alpha, beta, side):
         my_strategy = []
         ad_strategy = []
 
+
         temp_output_NE = compute_matrix(state, 1, side, my_move, ad_move)
         utility = temp_output_NE[0]
         my_strategy = temp_output_NE[1]
         ad_strategy = temp_output_NE[2]
 
-        bsmax = BR_max(state, side, alpha, ad_strategy)
-        bsmin = BR_min(state, oppnent, beta, my_strategy)
+        bsmax = BR_max(state, alpha, ad_strategy, side)
+        bsmin = BR_min(state, beta, my_strategy, oppnent)
 
         if bsmax[0] == None:
             return min_val
@@ -249,10 +250,9 @@ def double_oracle(state, alpha, beta, side):
 def BR_max(state, alpha, y, side):
     br = alpha
     move = None
-
     action_to_maxmal = []
 
-    for actions in find_legal_operations(state,side).values():
+    for actions in find_legal_operations(state, side).values():
         action_to_maxmal += actions
 
     p = []
@@ -260,8 +260,8 @@ def BR_max(state, alpha, y, side):
 
     for i in range(0, len(action_to_maxmal) ):
         
-        piJ = alpha_beta_minimax_limit(state, 2, False, side, float('-inf'), float('inf'), [action_to_maxmal[i]], list(y.keys())  )[0]
-        oiJ = alpha_beta_minimax_limit(state, 2, True, side, float('-inf'), float('inf'), [action_to_maxmal[i]], list(y.keys())  )[0]
+        piJ = alpha_beta_minimax_limit(state, 2, False, side, float('-inf'), float('inf'), [action_to_maxmal[i]], list(y.keys()))[0]
+        oiJ = alpha_beta_minimax_limit(state, 2, True, side, float('-inf'), float('inf'), [action_to_maxmal[i]], list(y.keys()))[0]
 
         #initialise the boudary 
         p = [ piJ for i in range(0, len(y)  )]
@@ -294,13 +294,14 @@ def BR_max(state, alpha, y, side):
     return move,br
 
 def BR_min(state, beta, x, side):
-    
+
     br = beta
     move = None
 
     action_to_minimal = []
 
     for actions in find_legal_operations(state,side).values():
+
         action_to_minimal += actions
 
     p = []
