@@ -102,7 +102,7 @@ def re_minimax(state, depth, max_player, side):
 
 
 def alpha_beta_minimax(state, depth, max_player, side, alpha, beta):
-    if depth == 0 or check_win_draw(state):
+    if depth == 0 or check_win(state):
         return evaluation(state, side), state
 
     if max_player:
@@ -132,6 +132,39 @@ def alpha_beta_minimax(state, depth, max_player, side, alpha, beta):
         return cur_min, best_move
 
 
+# -------------------------------------------double oracle---------------------------------------------
+def double_oracle(state, lower_bound, upper_bound, side):
+    if check_win(state):
+        return evaluation(state, side)
+    if alpha_beta_minimax(state, 2, True, side, float('-inf'), float('inf')) == alpha_beta_minimax(
+            state, 2, False, 1 - side, float('-inf'), float('inf')):
+        return alpha_beta_minimax(state, 2, True, side, float('-inf'), float('inf'))
+    upper_list = []
+    lower_list = []
+    p = []
+    o = []
+    for action in find_legal_operations(state, 1).values():
+        upper_list = upper_list + action
+    for action in find_legal_operations(state, 0).values():
+        lower_list = lower_list + action
+    for i in range(0, len(upper_list)):
+        for j in range(0, len(lower_list)):
+            new_state = copy.deepcopy(state)
+            new_state.operate(upper_list[i], 0)
+            new_state.battle(upper_list[2][2])
+            new_state.operate(lower_list[j], 1)
+            new_state.battle(lower_list[2][2])
+            p[i][j] = alpha_beta_minimax(state, 2, False, 1 - side, float('-inf'), float('inf'))
+            o[i][j] = alpha_beta_minimax(state, 2, True, side, float('-inf'), float('inf'))
+
+
+
+
+
+
+# -------------------------------------------helper---------------------------------------------
+
+
 def simulation(state, side):
     moves = []
     after_move = []
@@ -145,7 +178,7 @@ def simulation(state, side):
     return after_move
 
 
-def check_win_draw(state):
+def check_win(state):
     flag = False
     upper_tokens = []
     lower_tokens = []
@@ -165,16 +198,10 @@ def check_win_draw(state):
     return flag
 
 
-
-
 player = Player("upper")
 player.state.operate(("THROW", "s", (4, -4)), 1)
 player.state.operate(("THROW", "p", (-4, 0)), 0)
-
+counter = 0
 print(re_minimax(player.state, 2, True, 1))
 print(alpha_beta_minimax(player.state, 2, True, 1, float('-inf'), float('inf')))
 print("------end------")
-
-# only throw action
-
-# distinguish side
