@@ -12,7 +12,8 @@ import numpy as np
 
 import copy
 
-sys.app
+
+
 class Player:
     # global constant
 
@@ -186,8 +187,8 @@ def double_oracle(state, alpha, beta, side):
     new_state = simultaneous_move(state, my_move[0], ad_move[0], side)
 
     #key : actions i, value : [ui,j]
-    pIJ = alpha_beta_minimax_limit(new_state, 2, False, side, max_val, min_val, my_move, ad_move )[0]
-    oIJ = alpha_beta_minimax_limit(new_state, 2, True, side, max_val, min_val,  my_move, ad_move )[0]
+    pIJ = alpha_beta_minimax_limit(new_state, 2, False, side, max_val, min_val, copy.deepcopy(my_move), copy.deepcopy(my_move) )[0]
+    oIJ = alpha_beta_minimax_limit(new_state, 2, True, side, max_val, min_val,  copy.deepcopy(my_move), copy.deepcopy(my_move) )[0]
 
 
     #initialize the boundary of the first abitary actions 
@@ -227,8 +228,8 @@ def double_oracle(state, alpha, beta, side):
         my_strategy = temp_output_NE[1]
         ad_strategy = temp_output_NE[2]
 
-        bsmax = BR_max(state, side, alpha, ad_strategy)
-        bsmin = BR_min(state, oppnent, beta, my_strategy)
+        bsmax = BR_max(state, alpha, ad_strategy, side)
+        bsmin = BR_min(state, beta, my_strategy, oppnent)
 
         if bsmax[0] == None:
             return min_val
