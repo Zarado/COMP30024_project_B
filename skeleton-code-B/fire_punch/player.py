@@ -7,6 +7,8 @@ from fire_punch.utils import get_expected_value
 from fire_punch.utils import estimate_evaluation
 from fire_punch.utils import new_turn
 
+import numpy as np
+
 import copy
 
 
@@ -160,6 +162,10 @@ def alpha_beta_minimax(state, depth, max_player, side, alpha, beta, count=0):
 def double_oracle(state, alpha, beta, side):
 
     utility = 0
+
+    oppnent = 0
+    if not side:
+        oppnent
     
     if check_win(state):
         utility = evaluation(state, side)
@@ -179,10 +185,10 @@ def double_oracle(state, alpha, beta, side):
     new_state = simultaneous_move(state, my_move[0], ad_move[0][1], side)
 
     #key : actions i, value : [ui,j]
-    pIJ = alpha_beta_minimax(new_state, 2, False, side, max_val, min_val)[0]
-    oIJ = alpha_beta_minimax(new_state, 2, True, side, max_val, min_val)[0]
+    pIJ = alpha_beta_minimax(new_state, 2, False, side, max_val, min_val, my_move, ad_move )[0]
+    oIJ = alpha_beta_minimax(new_state, 2, True, side, max_val, min_val,  my_move, ad_move )[0]
 
-    j_count = 0
+
     #initialize the boundary of the first abitary actions 
 
     p = [[ pIJ for i in range(0,21) ] for j in range(0,21) ]
@@ -221,7 +227,7 @@ def double_oracle(state, alpha, beta, side):
         ad_strategy = temp_output_NE[2]
 
         bsmax = BR_max(state, side, alpha, ad_strategy)
-        bsmin = Br_min(state, side, beta, my_strategy)
+        bsmin = Br_min(state, oppnent, beta, my_strategy)
 
         if bsmax[0] == None:
             return min_val
@@ -252,22 +258,23 @@ def BR_max(state, alpha, y, side):
     p = []
     o = []
 
-    for i in range(0, len(my_action) + 1):
+    for i in range(0, len(action_to_maxmal) ):
         
-        piJ = alpha_beta_minimax()
-        oiJ =
+        piJ = alpha_beta_minimax_limit(state, 2, False, side, float('-inf'), float('inf'), [action_to_maxmal[i]], list(y.keys())  )[0]
+        oiJ = alpha_beta_minimax_limit(state, 2, True, side, float('-inf'), float('inf'), [action_to_maxmal[i]], list(y.keys())  )[0]
 
         #initialise the boudary 
-        p = [ piJ for i in range(0, len(y) + 1 )]
-        o = [ oiJ for i in range(0, len(y) + 1 )]
+        p = [ piJ for i in range(0, len(y)  )]
+        o = [ oiJ for i in range(0, len(y)  )]
         
-        utility = []
+        utility = np.zeors(len(y))
+        j = 0
 
-        if y[j][1] > 0 and p[j] < o[j]:
+        if list(y.values())[j] > 0 and p[j] < o[j]:
             
             for action,prob in y:
 
-                pij_estimate = max(p[j], br - estimate_evaluation(y, o, action) )
+                pij_estimate = max(p[j], br - estimate_evaluation(y, o[j], action) )
 
                 if pij_estimate > o[j]:
                     continue
@@ -280,6 +287,54 @@ def BR_max(state, alpha, y, side):
         #if have been calculate
 
         expected =  get_expected_value(y, utility)
+        if expected > br:
+            move = action_to_maxmal[i]
+            br = expected
+    
+    return move,br
+
+def BR_min(state, beta, x, side):
+    
+    br = beta
+    move = None
+
+    action_to_minimal = []
+
+    for actions in find_legal_operations(state,side).values():
+        action_to_minimal += actions
+
+    p = []
+    o = []
+
+    for i in range(0, len(action_to_minimal) ):
+        
+        piJ = alpha_beta_minimax_limit(state, 2, False, side, float('-inf'), float('inf'), [action_to_minimal[i]], list(x.keys())  )[0]
+        oiJ = alpha_beta_minimax_limit(state, 2, True, side, float('-inf'), float('inf'), [action_to_minimal[i]], list(x.keys())  )[0]
+
+        #initialise the boudary 
+        p = [ piJ for i in range(0, len(x))]
+        o = [ oiJ for i in range(0, len(x))]
+        
+        utility = np.zeors(len(x))
+        j = 0
+
+        if list(x.values())[j]> 0 and p[j] < o[j]:
+            
+            for action,prob in x:
+
+                pij_estimate = max(p[j], br - estimate_evaluation(y, o[j], action) )
+
+                if pij_estimate > o[j]:
+                    continue
+                else:
+                    new_state = new_turn(side,state,action_to_minimal[i], action)
+                    utility[j] = double_oracle(new_state, p[j], o[j])
+                    p[j] = utility[j]
+                    o[j] = utility[j]
+        
+        #if have been calculate
+
+        expected =  get_expected_value(x, utility)
         if expected > br:
             move = action_to_maxmal[i]
             br = expected
