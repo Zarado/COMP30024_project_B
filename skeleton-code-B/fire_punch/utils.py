@@ -121,20 +121,20 @@ def evaluation(state,side):
         evaluation_point += (weight1[side]*pair_num_defeat1[k]*relatively_distance1[k] + weight2[side]*pair_num_defeat2[k]*relatively_distance2[k])
     
     #difference of the num_tokens (without throw number)
-    '''
-    num_diff = (state.upper_token_num + state.throws_left[1]) - (state.lower_token_num + state.throws_left[0])
+    
+    num_diff = (state.token_left[1] + state.throws_left[1]) - (state.token_left[0] + state.throws_left[0])
     if not side:
         num_diff *= -1
     evaluation_point += num_diff*weight_token_difference
-    '''
+    
     
     #predict part 
-
+    '''
     throw_dif = state.throws_left[0] - state.throws_left[1]
     if side:
         throw_dif *= -1
     evaluation_point += throw_dif*weight_throw_left
-
+    '''
     return evaluation_point
 
 
