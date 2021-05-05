@@ -1,7 +1,9 @@
-from fire_punch.State import State
-from fire_punch.Token import Token
-
-
+from State import State
+from Token import Token
+from gametheory import solve_game
+import numpy as np
+import copy
+import time
 
 
 def find_legal_operations(state, side):
@@ -88,6 +90,8 @@ def evaluation(state,side):
     
     weight1 = [-1,1]
     weight2 = [1,-1]
+    weight_token_difference = 1
+    weight_throw_left = 1
 
     
     i = 0
@@ -116,12 +120,20 @@ def evaluation(state,side):
         
         evaluation_point += (weight1[side]*pair_num_defeat1[k]*relatively_distance1[k] + weight2[side]*pair_num_defeat2[k]*relatively_distance2[k])
     
+    #difference of the num_tokens (without throw number)
+    '''
+    num_diff = (state.upper_token_num + state.throws_left[1]) - (state.lower_token_num + state.throws_left[0])
+    if not side:
+        num_diff *= -1
+    evaluation_point += num_diff*weight_token_difference
+    '''
+    
     #predict part 
 
     throw_dif = state.throws_left[0] - state.throws_left[1]
     if side:
         throw_dif *= -1
-    evaluation_point += throw_dif
+    evaluation_point += throw_dif*weight_throw_left
 
     return evaluation_point
 
@@ -146,7 +158,109 @@ def find_distance(start, end):
         start.coordinate[0] - end.coordinate[0] + start.coordinate[1] - end.coordinate[1]) - max(
         abs(start.coordinate[0] - end.coordinate[0]), abs(start.coordinate[1] - end.coordinate[1]),
         abs(start.coordinate[0] - end.coordinate[0] + start.coordinate[1] - end.coordinate[1]))
+    
+
     return dis
+
+
+def compute_matrix(state,maximiser,side, max_actions,min_actions):
+
+
+    #find all combinations of the actions
+
+
+    start = time.time()
+
+    oppnent = 0
+    if not side:
+        oppnent = 1
+    
+    op_maximiser = 0
+    if not maximiser:
+        op_maximiser = 1
+
+    #assign max/min to different side
+    actions = [[],[]]
+    actions[side]    = max_actions
+    actions[oppnent] = min_actions
+    if not maximiser:
+        actions = actions[::-1]
+    #action[side] = actions list of each side
+
+
+    #V =   [[ simulate_turn(side,state,i,j) for i in upper_actions_list] for j in lower_actions_list]
+    row = 0
+
+    V = np.zeros((len(actions[side]),len(actions[oppnent])))
+    V = np.array(V)
+
+    for i in actions[side]:
+        
+        column = 0
+        for j in actions[oppnent]:
+            evaluation_point = simulate_turn(side,state,i,j)
+
+            V[row][column] = evaluation_point
+
+            column += 1
+        row += 1
+    
+
+    output1 = solve_game(V,maximiser,side)
+    output2 = solve_game(V,op_maximiser,oppnent)
+
+
+    strategy_1 = {}
+    strategy_2 = {}
+
+    pv_index = 0
+    for key in actions[side]:
+        strategy_1[key] = output1[0][pv_index]
+        pv_index +=1
+    
+    pv_index_op = 0
+    for key_op in actions[oppnent]:
+        strategy_2[key_op] = output2[0][pv_index_op]
+        pv_index_op +=1
+    
+    
+    
+    end = time.time() -start
+
+    print(end)
+
+
+    return output1[1],strategy_1,strategy_2
+
+
+    
+
+    
+def simulate_turn(side,state,our_action,oppnent_action):
+   
+    oppnent = 0
+
+    if not side:
+        oppnent = 1
+
+    simulation = copy.deepcopy(state)
+
+    simulation.operate(our_action,side)
+    simulation.operate(oppnent_action,oppnent)
+
+    evaluation_point = evaluation(simulation,side)
+
+    return evaluation_point
+
+        
+
+
+
+
+
+        
+
+
 
 
 """
@@ -161,6 +275,18 @@ ts.lower_dict.get("p").append(Token((-2,-2),"p"))
 ts.throws_left[0] = 6
 ts.throws_left[1] = 7
 """
+'''
+
+ts = State()
 
 
+minival = []
+maxival = []
+for upper in find_legal_operations(ts,1).values():
+    minival += upper
+for lower in find_legal_operations(ts,0).values():
+    maxival += lower
+print("test")
 
+print(compute_matrix(ts,0,1,maxival,minival)[2])
+'''
