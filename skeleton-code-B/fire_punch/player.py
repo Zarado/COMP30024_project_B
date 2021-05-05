@@ -2,6 +2,11 @@ from fire_punch.State import State
 from fire_punch.Token import Token
 from fire_punch.utils import find_legal_operations
 from fire_punch.utils import evaluation
+from fire_punch.utils import compute_matrix
+from fire_punch.utils import get_expected_value
+from fire_punch.utils import estimate_evaluation
+from fire_punch.utils import new_turn
+
 import copy
 
 
@@ -135,79 +140,132 @@ def alpha_beta_minimax(state, depth, max_player, side, alpha, beta):
 # -------------------------------------------double oracle---------------------------------------------
 def double_oracle(state, alpha, beta, side):
 
+    utility = 0
+    
     if check_win(state):
-        return evaluation(state, side)
+        utility = evaluation(state, side)
+        return utility
 
     max_val = float('-inf')
     min_val = float('inf')
     left_bound = alpha_beta_minimax(state, 2, False, side, max_val, min_val)[0]
     right_bound = alpha_beta_minimax(state, 2, True, side, max_val, min_val)[0]
     if left_bound == right_bound:
-        return left_bound
+        utility = left_bound
+        return utility
 
     #find arbitrary move
     my_move = []
     ad_move = []
     new_state = simultaneous_move(state, my_move[0], ad_move[0][1], side)
 
-    p = [][]
-    o = [][]
     #key : actions i, value : [ui,j]
     pIJ = alpha_beta_minimax(new_state, 2, False, side, max_val, min_val)[0]
     oIJ = alpha_beta_minimax(new_state, 2, True, side, max_val, min_val)[0]
 
     j_count = 0
-    #initialize the boundary
+    #initialize the boundary of the first abitary actions 
 
-    p[[pIJ]
-    o[my_move[0]]=[oIJ]
+    p = [[ pIJ for i in range(0,21) ] for j in range(0,21) ]
+    o = [[ oIJ for i in range(0,21) ] for j in range(0,21) ]
+ 
+
 
     while alpha != beta:
+        index_i = 0
 
         for i in my_move:
 
+            index_j = 0
             for j in ad_move:
 
+                if p[index_i][index_j] < o[index_i][index_j] :
+                    
+                    new_state = simultaneous_move(state, i,j, side)
+                    
+                    u_temp = double_oracle(new_state, alpha, beta, side)
 
-                if p[i] < o[i]:
-                    new_state = simultaneous_move(state, moves[i][0], moves[i][1])
-                    u = double_oracle(new_state, alpha, beta, side)
-                    p[i] = u
-                    o[i] = u
+                    p[index_i][index_j] = u_temp
+                    o[index_i][index_j] = u_temp
+            
+                index_j += 1
+        index_i += 1
 
+        #end for loop
 
+        my_strategy = []
+        ad_strategy = []
 
+        temp_output_NE = compute_matrix(state, 1, side, my_move, ad_move)
+        utility = temp_output_NE[0]
+        my_strategy = temp_output_NE[1]
+        ad_strategy = temp_output_NE[2]
 
+        bsmax = BR_max(state, side, alpha, ad_strategy)
+        bsmin = Br_min(state, side, beta, my_strategy)
 
+        if bsmax[0] == None:
+            return min_val
+        elif bsmin[0] == None:
+            return max_val
+        
+        alpha = max(alpha, bsmin[1])
+        beta = min(beta, bsmax[1])
+
+        #add the new action to the actions list 
+        my_move.append( bsmax[0])
+        ad.move.append( bsmin[0])
+
+        return utility
+
+        
 
 
 def BR_max(state, alpha, y, side):
     br = alpha
-    move = []
-    my_action = []
-    ad_action = []
+    move = None
+
+    action_to_maxmal = []
+
+    for actions in find_legal_operations(state,side).values():
+        action_to_maxmal += actions
+
     p = []
     o = []
 
-    for action in find_legal_operations(state, side).values():
-        my_action = my_action + action
-    for action in find_legal_operations(state, side).values():
-        ad_action = ad_action + action
+    for i in range(0, len(my_action) + 1):
+        
+        piJ = alpha_beta_minimax()
+        oiJ =
 
-    for i in range(0, len(my_action)):
-        for move in ad_action:
-            new_state = copy.deepcopy(state)
-            new_state.operate(my_action[i], side)
-            new_state.operate(move, 1-side)
-            new_state.battle(move[2])
-            new_state.battle(my_action[i][2])
-            p[i] = min(p[i], alpha_beta_minimax(new_state, 2, True, side, float('-inf'), float('inf')))
-            o[i] = max(o[i], alpha_beta_minimax(new_state, 2, False, 1 - side, float('-inf'), float('inf')))
+        #initialise the boudary 
+        p = [ piJ for i in range(0, len(y) + 1 )]
+        o = [ oiJ for i in range(0, len(y) + 1 )]
+        
+        utility = []
 
-        for action in ad_action:
-            if action in y.keys():
-                pass
+        if y[j][1] > 0 and p[j] < o[j]:
+            
+            for action,prob in y:
 
+                pij_estimate = max(p[j], br - estimate_evaluation(y, o, action) )
+
+                if pij_estimate > o[j]:
+                    continue
+                else:
+                    new_state = new_turn(side,state,action_to_maxmal[i], action)
+                    utility[j] = double_oracle(new_state, p[j], o[j])
+                    p[j] = utility[j]
+                    o[j] = utility[j]
+        
+        #if have been calculate
+
+        expected =  get_expected_value(y, utility)
+        if expected > br:
+            move = action_to_maxmal[i]
+            br = expected
+    
+    return move,br
 
 
 def simultaneous_move(state, move1, move2, side):
