@@ -171,6 +171,7 @@ def double_oracle(state, alpha, beta, side):
     
     if check_win(state):
         utility = evaluation(state, side)
+        print("cutoff test")
         return utility
 
     max_val = float('-inf')
@@ -179,6 +180,7 @@ def double_oracle(state, alpha, beta, side):
     right_bound = alpha_beta_minimax(state, 2, True, side, max_val, min_val)[0]
     if left_bound == right_bound:
         utility = left_bound
+        print("alpha = beta")
         return utility
 
     #find arbitrary move
@@ -232,8 +234,10 @@ def double_oracle(state, alpha, beta, side):
         bsmin = BR_min(state, beta, my_strategy, oppnent)
 
         if bsmax[0] == None:
+            print("bsmax none")
             return min_val
         elif bsmin[0] == None:
+            print("bsmin none")
             return max_val
         
         alpha = max(alpha, bsmin[1])
@@ -243,12 +247,15 @@ def double_oracle(state, alpha, beta, side):
         my_move.append( bsmax[0] )
         ad_move.append( bsmin[0] )
 
+        print("run out of the double oracle")
+
         return utility
 
         
         
 
 def BR_max(state, alpha, y, side):
+    print("call br max")
     br = alpha
     move = None
 
@@ -296,7 +303,7 @@ def BR_max(state, alpha, y, side):
     return move,br
 
 def BR_min(state, beta, x, side):
-    
+    print("call br_min ")
     br = beta
     move = None
 
