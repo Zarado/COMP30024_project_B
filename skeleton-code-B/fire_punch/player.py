@@ -181,8 +181,8 @@ def double_oracle(state, alpha, beta, side):
     new_state = simultaneous_move(state, my_move[0], ad_move[0][1], side)
 
     #key : actions i, value : [ui,j]
-    pIJ = alpha_beta_minimax(new_state, 2, False, side, max_val, min_val, my_move, ad_move )[0]
-    oIJ = alpha_beta_minimax(new_state, 2, True, side, max_val, min_val,  my_move, ad_move )[0]
+    pIJ = alpha_beta_minimax_limit(new_state, 2, False, side, max_val, min_val, my_move, ad_move )[0]
+    oIJ = alpha_beta_minimax_limit(new_state, 2, True, side, max_val, min_val,  my_move, ad_move )[0]
 
 
     #initialize the boundary of the first abitary actions 
@@ -223,7 +223,7 @@ def double_oracle(state, alpha, beta, side):
         ad_strategy = temp_output_NE[2]
 
         bsmax = BR_max(state, side, alpha, ad_strategy)
-        bsmin = Br_min(state, oppnent, beta, my_strategy)
+        bsmin = BR_min(state, oppnent, beta, my_strategy)
 
         if bsmax[0] == None:
             return min_val
@@ -235,7 +235,7 @@ def double_oracle(state, alpha, beta, side):
 
         #add the new action to the actions list 
         my_move.append( bsmax[0])
-        ad.move.append( bsmin[0])
+        ad_move.append( bsmin[0])
 
         return utility
 
@@ -332,7 +332,7 @@ def BR_min(state, beta, x, side):
 
         expected =  get_expected_value(x, utility)
         if expected > br:
-            move = action_to_maxmal[i]
+            move = action_to_minimal[i]
             br = expected
     
     return move,br
