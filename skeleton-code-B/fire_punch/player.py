@@ -322,7 +322,7 @@ def BR_min(state, beta, x, side):
             
             for action,prob in x:
 
-                pij_estimate = max(p[j], br - estimate_evaluation(y, o[j], action) )
+                pij_estimate = max(p[j], br - estimate_evaluation(x, o[j], action) )
 
                 if pij_estimate > o[j]:
                     continue
