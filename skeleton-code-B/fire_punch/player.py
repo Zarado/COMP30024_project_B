@@ -180,8 +180,8 @@ def double_oracle(state, alpha, beta, side):
         return utility
 
     #find arbitrary move
-    my_move = []
-    ad_move = []
+    my_move = [('THROW', 'r', (4, -4))]
+    ad_move = [('THROW', 'r', (-4, 0))]
     new_state = simultaneous_move(state, my_move[0], ad_move[0][1], side)
 
     #key : actions i, value : [ui,j]
