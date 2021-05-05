@@ -82,3 +82,8 @@ class State:
 
             if "p" in battle_list and "s" in battle_list:
                 self.remove_coordinate(coordinate, "p")
+
+c = [0]
+print(len(c))
+c.clear()
+print(len(c))
