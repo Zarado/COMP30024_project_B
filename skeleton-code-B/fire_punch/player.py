@@ -6,7 +6,6 @@ from fire_punch.utils import compute_matrix
 from fire_punch.utils import get_expected_value
 from fire_punch.utils import estimate_evaluation
 from fire_punch.utils import new_turn
-import sys
 
 
 import numpy as np
