@@ -1,3 +1,7 @@
+
+import sys
+sys.path.append('..')
+
 from fire_punch.State import State
 from fire_punch.Token import Token
 from fire_punch.utils import find_legal_operations
@@ -11,6 +15,7 @@ from fire_punch.utils import new_turn
 import numpy as np
 
 import copy
+
 
 
 
@@ -189,16 +194,17 @@ def double_oracle(state, alpha, beta, side):
     new_state = simultaneous_move(state, my_move[0], ad_move[0], side)
 
     #key : actions i, value : [ui,j]
-    pIJ = alpha_beta_minimax_limit(new_state, 2, False, side, max_val, min_val, copy.deepcopy(my_move), copy.deepcopy(my_move) )[0]
-    oIJ = alpha_beta_minimax_limit(new_state, 2, True, side, max_val, min_val,  copy.deepcopy(my_move), copy.deepcopy(my_move) )[0]
+    pIJ = alpha_beta_minimax_limit(new_state, 3, False, side, max_val, min_val, copy.deepcopy(my_move), copy.deepcopy(my_move) )[0]
+    oIJ = alpha_beta_minimax_limit(new_state, 3, True, side, max_val, min_val,  copy.deepcopy(my_move), copy.deepcopy(my_move) )[0]
 
+    
 
     #initialize the boundary of the first abitary actions 
 
     p = [[ pIJ for i in range(0,21) ] for j in range(0,21) ]
     o = [[ oIJ for i in range(0,21) ] for j in range(0,21) ]
  
-
+    print("pIJ = {a}, oIJ = {b}, oij = {c}, pij ={d} ".format(a= oIJ,b= pIJ, c=o[0][0], d = p[0][0]))
 
     while alpha != beta:
         index_i = 0
@@ -299,7 +305,7 @@ def BR_max(state, alpha, y, side):
         if expected > br:
             move = action_to_maxmal[i]
             br = expected
-    
+    print(move,br)
     return move,br
 
 def BR_min(state, beta, x, side):
@@ -331,9 +337,9 @@ def BR_min(state, beta, x, side):
             
             for action,prob in x.items():
 
-                pij_estimate = max(p[j], br - estimate_evaluation(x, o[j], action) )
+                pij_estimate = min(o[j], br - estimate_evaluation(x, p[j], action) )
 
-                if pij_estimate > o[j]:
+                if pij_estimate < p[j]:
                     continue
                 else:
                     new_state = new_turn(side,state,action_to_minimal[i], action)
@@ -344,9 +350,11 @@ def BR_min(state, beta, x, side):
         #if have been calculate
 
         expected =  get_expected_value(x, utility)
-        if expected > br:
+        if expected < br:
             move = action_to_minimal[i]
             br = expected
+        
+    print(move,br)
     
     return move,br
 
@@ -418,6 +426,7 @@ player.state.operate(("THROW", "p", (-4, 0)), 0)
 counter = [1]
 
 print(double_oracle(player.state, float('-inf'), float('inf'), 1))
+
 
 #print(alpha_beta_minimax(player.state, 4, True, 1, float('-inf'), float('inf')))
 #print(alpha_beta_minimax(player.state, 4, False, 1, float('-inf'), float('inf')))
