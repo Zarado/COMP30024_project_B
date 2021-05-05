@@ -133,30 +133,52 @@ def alpha_beta_minimax(state, depth, max_player, side, alpha, beta):
 
 
 # -------------------------------------------double oracle---------------------------------------------
-def double_oracle(state, lower_bound, upper_bound, side):
+def double_oracle(state, alpha, beta, side):
+
     if check_win(state):
         return evaluation(state, side)
-    min_val = alpha_beta_minimax(state, 2, False, side, float('-inf'), float('inf'))[0]
-    max_val = alpha_beta_minimax(state, 2, True, side, float('-inf'), float('inf'))[0]
-    if min_val == max_val:
-        return max_val
-    upper_list = []
-    lower_list = []
-    p = []
-    o = []
-    for action in find_legal_operations(state, 1).values():
-        upper_list = upper_list + action
-    for action in find_legal_operations(state, 0).values():
-        lower_list = lower_list + action
-    for i in range(0, len(upper_list)):
-        for j in range(0, len(lower_list)):
-            new_state = copy.deepcopy(state)
-            new_state.operate(upper_list[i], 0)
-            new_state.battle(upper_list[2][2])
-            new_state.operate(lower_list[j], 1)
-            new_state.battle(lower_list[2][2])
-            p[i][j] = alpha_beta_minimax(state, 2, False, 1 - side, float('-inf'), float('inf'))
-            o[i][j] = alpha_beta_minimax(state, 2, True, side, float('-inf'), float('inf'))
+
+    max_val = float('-inf')
+    min_val = float('inf')
+    left_bound = alpha_beta_minimax(state, 2, False, side, max_val, min_val)[0]
+    right_bound = alpha_beta_minimax(state, 2, True, side, max_val, min_val)[0]
+    if left_bound == right_bound:
+        return left_bound
+
+    #find arbitrary move
+    my_move = []
+    ad_move = []
+    new_state = simultaneous_move(state, my_move[0], ad_move[0][1], side)
+
+    p = [][]
+    o = [][]
+    #key : actions i, value : [ui,j]
+    pIJ = alpha_beta_minimax(new_state, 2, False, side, max_val, min_val)[0]
+    oIJ = alpha_beta_minimax(new_state, 2, True, side, max_val, min_val)[0]
+
+    j_count = 0
+    #initialize the boundary
+
+    p[[pIJ]
+    o[my_move[0]]=[oIJ]
+
+    while alpha != beta:
+
+        for i in my_move:
+
+            for j in ad_move:
+
+
+                if p[i] < o[i]:
+                    new_state = simultaneous_move(state, moves[i][0], moves[i][1])
+                    u = double_oracle(new_state, alpha, beta, side)
+                    p[i] = u
+                    o[i] = u
+
+
+
+
+
 
 
 def BR_max(state, alpha, y, side):
@@ -188,6 +210,15 @@ def BR_max(state, alpha, y, side):
 
 
 
+def simultaneous_move(state, move1, move2, side):
+
+    new_state = copy.deepcopy(state)
+    new_state.operate(move1, side)
+    new_state.operate(move2, 1 - side)
+    new_state.battle(move1[2])
+    new_state.battle(move2[2])
+
+    return new_state
 
 
 
