@@ -182,7 +182,7 @@ def double_oracle(state, alpha, beta, side):
     #find arbitrary move
     my_move = [('THROW', 'r', (4, -4))]
     ad_move = [('THROW', 'r', (-4, 0))]
-    new_state = simultaneous_move(state, my_move[0], ad_move[0][1], side)
+    new_state = simultaneous_move(state, my_move[0], ad_move[0], side)
 
     #key : actions i, value : [ui,j]
     pIJ = alpha_beta_minimax_limit(new_state, 2, False, side, max_val, min_val, my_move, ad_move )[0]
@@ -406,8 +406,9 @@ def check_win(state):
 player = Player("upper")
 player.state.operate(("THROW", "s", (4, -4)), 1)
 player.state.operate(("THROW", "p", (-4, 0)), 0)
-counter = [1]
+print(double_oracle(player.state, float('-inf'), float('inf'), 1))
 
-print(alpha_beta_minimax(player.state, 4, True, 1, float('-inf'), float('inf')))
-print(alpha_beta_minimax(player.state, 4, False, 1, float('-inf'), float('inf')))
+#print(alpha_beta_minimax(player.state, 4, True, 1, float('-inf'), float('inf')))
+#print(alpha_beta_minimax(player.state, 4, False, 1, float('-inf'), float('inf')))
 print("------end------")
+
