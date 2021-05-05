@@ -158,6 +158,40 @@ def double_oracle(state, lower_bound, upper_bound, side):
             o[i][j] = alpha_beta_minimax(state, 2, True, side, float('-inf'), float('inf'))
 
 
+def BR_max(state, alpha, y, side):
+    br = alpha
+    move = []
+    my_action = []
+    ad_action = []
+    p = []
+    o = []
+
+    for action in find_legal_operations(state, side).values():
+        my_action = my_action + action
+    for action in find_legal_operations(state, side).values():
+        ad_action = ad_action + action
+
+    for i in range(0, len(my_action)):
+        for move in ad_action:
+            new_state = copy.deepcopy(state)
+            new_state.operate(my_action[i], side)
+            new_state.operate(move, 1-side)
+            new_state.battle(move[2])
+            new_state.battle(my_action[i][2])
+            p[i] = min(p[i], alpha_beta_minimax(new_state, 2, True, side, float('-inf'), float('inf')))
+            o[i] = max(o[i], alpha_beta_minimax(new_state, 2, False, 1 - side, float('-inf'), float('inf')))
+
+        for action in ad_action:
+            if action in y.keys():
+                pass
+
+
+
+
+
+
+
+
 
 
 
@@ -202,6 +236,7 @@ player = Player("upper")
 player.state.operate(("THROW", "s", (4, -4)), 1)
 player.state.operate(("THROW", "p", (-4, 0)), 0)
 counter = 0
-print(re_minimax(player.state, 2, True, 1))
-print(alpha_beta_minimax(player.state, 2, True, 1, float('-inf'), float('inf')))
+
+print(alpha_beta_minimax(player.state, 3, True, 1, float('-inf'), float('inf')))
+print(alpha_beta_minimax(player.state, 3, False, 1, float('-inf'), float('inf')))
 print("------end------")
