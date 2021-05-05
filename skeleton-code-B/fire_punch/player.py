@@ -410,6 +410,8 @@ player.state.operate(("THROW", "s", (4, -4)), 1)
 player.state.operate(("THROW", "p", (-4, 0)), 0)
 counter = [1]
 
-print(alpha_beta_minimax(player.state, 4, True, 1, float('-inf'), float('inf')))
-print(alpha_beta_minimax(player.state, 4, False, 1, float('-inf'), float('inf')))
+print(double_oracle(player.state, float('-inf'), float('inf'), 1))
+
+#print(alpha_beta_minimax(player.state, 4, True, 1, float('-inf'), float('inf')))
+#print(alpha_beta_minimax(player.state, 4, False, 1, float('-inf'), float('inf')))
 print("------end------")
