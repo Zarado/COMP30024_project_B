@@ -1,5 +1,5 @@
-from State import State
-from Token import Token
+#from State import State
+#from Token import Token
 from gametheory import solve_game
 import numpy as np
 import copy
@@ -251,6 +251,50 @@ def simulate_turn(side,state,our_action,oppnent_action):
     evaluation_point = evaluation(simulation,side)
 
     return evaluation_point
+
+def new_turn(side,state,our_action,oppnent_action):
+   
+    oppnent = 0
+
+    if not side:
+        oppnent = 1
+
+    simulation = copy.deepcopy(state)
+
+    simulation.operate(our_action,side)
+    simulation.operate(oppnent_action,oppnent)
+
+
+    return simulation
+
+def get_expected_value(strategy, value_list):
+
+    
+    expected = 0
+
+    index = 0
+    
+    for action,prob in strategy:
+        expected += prob * value_list[index]
+        index += 1
+    return expected
+
+def estimate_evaluation(strategy, optimistic_list, exception):
+
+    estimated = 0
+
+    index = 0
+
+    for action,prob in strategy:
+
+        if action != action:
+            estimated += prob* optimistic_list[index]
+        index += 1
+
+    return estimated
+
+
+
 
         
 
