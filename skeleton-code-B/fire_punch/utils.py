@@ -83,8 +83,9 @@ def find_abitary_move(state,side):
         abitary.append(swings[swing])
     
     if len(abitary) < 2:
-        throw2 = random.randint(0, throws_num//2)
-        abitary.append(throws[throw2])
+        if throws_num > 3 * 5:
+            throw2 = random.randint(0, throws_num//2)
+            abitary.append(throws[throw2])
 
 
     return abitary
