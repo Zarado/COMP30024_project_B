@@ -186,7 +186,7 @@ def double_oracle(state, alpha, beta, side, depth):
     right_bound = alpha_beta_minimax(state, 2, False, side, max_val, min_val)[0]
     if left_bound == right_bound or abs(left_bound - right_bound) < 1.1 :
         utility = left_bound
-        print("left {a} = right {b} ".format(a = left_bound, b = right_bound))
+        #print("left {a} = right {b} ".format(a = left_bound, b = right_bound))
         return utility, move
     # find arbitrary move
     my_move = [] 
@@ -194,7 +194,7 @@ def double_oracle(state, alpha, beta, side, depth):
     my_move += find_abitary_move(state,side)
     ad_move += find_abitary_move(state,oppnent)
     
-
+    
     # key : actions i, value : [ui,j]
     pIJ = alpha_beta_minimax_limit(state, 2, True, side, max_val, min_val, copy.deepcopy(my_move),
                                    copy.deepcopy(ad_move))[0]
@@ -208,7 +208,7 @@ def double_oracle(state, alpha, beta, side, depth):
 
     print("pIJ = {a}, oIJ = {b}, oij = {c}, pij ={d} ".format(a=pIJ, b=oIJ, c=o[0][0], d=p[0][0]))
 
-    while alpha != beta or abs(alpha - beta) < 0.5 :
+    while alpha != beta or abs(alpha - beta) > 0.5 :
         print("enter_while")
 
         index_i = 0
@@ -219,6 +219,7 @@ def double_oracle(state, alpha, beta, side, depth):
             for j in ad_move:
 
                 if p[index_i][index_j] < o[index_i][index_j]:
+                    
                     new_state = simultaneous_move(state, i, j, side)
 
                     u_temp = double_oracle(new_state, alpha, beta, side, depth - 1)[0]
@@ -268,7 +269,7 @@ def double_oracle(state, alpha, beta, side, depth):
 
 
 def BR_max(state, alpha, y, side):
-    
+    print("{a}  {b} ".format(a = "br max" , b = len(y)))
     br = alpha
     move = None
 
@@ -285,11 +286,13 @@ def BR_max(state, alpha, y, side):
 
     for i in range(0, len(action_to_maxmal)):
 
-        piJ = alpha_beta_minimax_limit(state, 2, False, side, float('-inf'), float('inf'), [action_to_maxmal[i]],
+        piJ = alpha_beta_minimax_limit(state, 2, True, side, float('-inf'), float('inf'), [action_to_maxmal[i]],
                                        list(y.keys()))[0]
-        oiJ = alpha_beta_minimax_limit(state, 2, True, side, float('-inf'), float('inf'), [action_to_maxmal[i]],
+        
+        oiJ = alpha_beta_minimax_limit(state, 2, False, side, float('-inf'), float('inf'), [action_to_maxmal[i]],
                                        list(y.keys()))[0]
 
+        
         # initialise the boudary
         p = [piJ for i in range(0, len(y))]
         o = [oiJ for i in range(0, len(y))]
@@ -300,7 +303,7 @@ def BR_max(state, alpha, y, side):
         j = 0
 
         if list(y.values())[j] > 0 and p[j] < o[j]:
-            print("pass")
+            
             for action, prob in y.items():
 
                 pij_estimate = max(p[j], br - estimate_evaluation(y, o[j], action))
@@ -339,9 +342,9 @@ def BR_min(state, beta, x, side):
 
     for i in range(0, len(action_to_minimal)):
 
-        piJ = alpha_beta_minimax_limit(state, 2, False, side, float('-inf'), float('inf'), [action_to_minimal[i]],
+        piJ = alpha_beta_minimax_limit(state, 2, True, side, float('-inf'), float('inf'), [action_to_minimal[i]],
                                        list(x.keys()))[0]
-        oiJ = alpha_beta_minimax_limit(state, 2, True, side, float('-inf'), float('inf'), [action_to_minimal[i]],
+        oiJ = alpha_beta_minimax_limit(state, 2, False, side, float('-inf'), float('inf'), [action_to_minimal[i]],
                                        list(x.keys()))[0]
 
         # initialise the boudary
@@ -434,7 +437,7 @@ player = Player("upper")
 player.state.operate(("THROW", "s", (4, -4)), 1)
 player.state.operate(("THROW", "p", (-4, 0)), 0)
 
-print(double_oracle(player.state, -100, 100, 1, 3))
+print(double_oracle(player.state, -100, 100, 1, 2))
 #print(alpha_beta_minimax_limit(player.state, 3, True, 1, float('-inf'), float('inf'), [("SLIDE", (4,-4), (3, -4))], []))
 # print(alpha_beta_minimax(player.state, 4, True, 1, float('-inf'), float('inf')))
 # print(alpha_beta_minimax(player.state, 4, False, 1, float('-inf'), float('inf')))
