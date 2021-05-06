@@ -67,8 +67,6 @@ class State:
                     if token.type not in battle_list:
                         battle_list.append(token.type.lower())
 
-        print(battle_list)
-
         if len(battle_list) == 3:
             self.remove_coordinate(coordinate, "all")
 
@@ -83,7 +81,3 @@ class State:
             if "p" in battle_list and "s" in battle_list:
                 self.remove_coordinate(coordinate, "p")
 
-c = [0]
-print(len(c))
-c.clear()
-print(len(c))
