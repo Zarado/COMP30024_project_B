@@ -69,7 +69,7 @@ class Player:
         """
 
         # move = alpha_beta_minimax(self.state, 2, True, self.side, float('-inf'), float('inf'))[1]
-        move = double_oracle(player.state, float('-inf'), float('inf'), player.side)[1]
+        move = double_oracle(self.state, float('-inf'), float('inf'), player.side)[1]
 
         return move
 
@@ -180,13 +180,12 @@ def double_oracle(state, alpha, beta, side):
 
     max_val = float('-inf')
     min_val = float('inf')
-    left_bound, move = alpha_beta_minimax(state, 2, False, side, max_val, min_val)
-    right_bound = alpha_beta_minimax(state, 2, True, side, max_val, min_val)[0]
+    left_bound, move = alpha_beta_minimax(state, 2, True, side, max_val, min_val)
+    right_bound = alpha_beta_minimax(state, 2, False, side, max_val, min_val)[0]
     if left_bound == right_bound:
         utility = left_bound
         print("alpha = beta")
         return utility, move
-
     # find arbitrary move
     my_move = [('THROW', 'r', (4, -4))]
     ad_move = [('THROW', 'r', (-4, 0))]
@@ -203,9 +202,11 @@ def double_oracle(state, alpha, beta, side):
     p = [[pIJ for i in range(0, 21)] for j in range(0, 21)]
     o = [[oIJ for i in range(0, 21)] for j in range(0, 21)]
 
-    # print("pIJ = {a}, oIJ = {b}, oij = {c}, pij ={d} ".format(a=pIJ, b=oIJ, c=o[0][0], d=p[0][0]))
+    print("pIJ = {a}, oIJ = {b}, oij = {c}, pij ={d} ".format(a=pIJ, b=oIJ, c=o[0][0], d=p[0][0]))
 
     while alpha != beta:
+        print("enter_while")
+        
         index_i = 0
 
         for i in my_move:
@@ -254,7 +255,7 @@ def double_oracle(state, alpha, beta, side):
         print("run out of the double oracle")
         print(my_move[-1])
 
-        return utility, my_move[-1]
+    return utility, my_move[-1]
 
 
 def BR_max(state, alpha, y, side):
@@ -412,8 +413,8 @@ def check_win(state):
 
 
 player = Player("upper")
-#player.state.operate(("THROW", "s", (4, -4)), 1)
-#player.state.operate(("THROW", "p", (-4, 0)), 0)
+player.state.operate(("THROW", "s", (4, -4)), 1)
+player.state.operate(("THROW", "p", (-4, 0)), 0)
 counter = [1]
 
 print(double_oracle(player.state, float('-inf'), float('inf'), 1))
