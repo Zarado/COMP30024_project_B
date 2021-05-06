@@ -180,8 +180,8 @@ def double_oracle(state, alpha, beta, side):
         print("cutoff test")
         return utility, state
 
-    max_val = -100
-    min_val = 100
+    max_val = alpha
+    min_val = beta
     left_bound, move = alpha_beta_minimax(state, 2, True, side, max_val, min_val)
     right_bound = alpha_beta_minimax(state, 2, False, side, max_val, min_val)[0]
     if left_bound == right_bound or abs(left_bound - right_bound) < 1.1 :

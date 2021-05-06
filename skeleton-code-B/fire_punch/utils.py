@@ -62,17 +62,30 @@ def find_abitary_move(state,side):
 
     abitary = []
 
-    if len(action_dict["THROW"]) > 0:
-        throw = random.randint(0, len(action_dict["THROW"]) - 1)
-        abitary.append(action_dict["THROW"][throw])
+    throws = action_dict["THROW"]
+    throws_num = len(throws)
+    slides = action_dict["SLIDE"]
+    slides_num = len(slides)
+    swings = action_dict["SWING"]
+    swings_num = len(swings)
+
+    if throws_num > 0:
+        throw = random.randint( throws_num//2 , throws_num - 1)
+        abitary.append(throws[throw])
+        
     
-    if len(action_dict["SLIDE"]) > 0:
-        slide = random.randint(0, len(action_dict["SLIDE"]) - 1)
-        abitary.append(action_dict["SLIDE"][slide])
+    if slides_num > 0:
+        slide = random.randint(0, slides_num - 1)
+        abitary.append(slides[slide])
     
-    if len(action_dict["SWING"]) > 0:
-        swing = random.randint(0, len(action_dict["SWING"]) - 1)
-        abitary.append(action_dict["SWING"][swing])
+    if swings_num > 0:
+        swing = random.randint(0, swings_num - 1)
+        abitary.append(swings[swing])
+    
+    if len(abitary) < 2:
+        throw2 = random.randint(0, throws_num//2)
+        abitary.append(throws[throw2])
+
 
     return abitary
 
@@ -236,7 +249,7 @@ def compute_matrix(state,maximiser,side, max_actions,min_actions):
 
     strategy_1 = {}
     strategy_2 = {}
-
+    #print(output1[0][0])
     pv_index = 0
     for key in actions[side]:
         strategy_1[key] = output1[0][pv_index]
@@ -251,7 +264,7 @@ def compute_matrix(state,maximiser,side, max_actions,min_actions):
     
     end = time.time() -start
 
-    print(end)
+    #print(end)
 
 
     return output1[1],strategy_1,strategy_2
@@ -345,8 +358,8 @@ ts.lower_dict.get("p").append(Token((-2,-2),"p"))
 ts.throws_left[0] = 6
 ts.throws_left[1] = 7
 """
-'''
 
+'''
 ts = State()
 
 
@@ -358,7 +371,6 @@ for lower in find_legal_operations(ts,0).values():
     maxival += lower
 print("test")
 
-print(compute_matrix(ts,0,1,maxival,minival)[2])
+compute_matrix(ts,0,1,maxival,minival)[2]
 '''
-te = State()
-find_abitary_move(te,1)
+
