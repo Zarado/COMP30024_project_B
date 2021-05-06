@@ -11,7 +11,7 @@ from fire_punch.utils import get_expected_value
 from fire_punch.utils import estimate_evaluation
 from fire_punch.utils import new_turn
 from fire_punch.utils import find_abitary_move
-
+import math
 import numpy as np
 
 import copy
@@ -180,13 +180,13 @@ def double_oracle(state, alpha, beta, side):
         print("cutoff test")
         return utility, state
 
-    max_val = float('-inf')
-    min_val = float('inf')
+    max_val = -100
+    min_val = 100
     left_bound, move = alpha_beta_minimax(state, 2, True, side, max_val, min_val)
     right_bound = alpha_beta_minimax(state, 2, False, side, max_val, min_val)[0]
-    if left_bound == right_bound:
+    if left_bound == right_bound or abs(left_bound - right_bound) < 1.1 :
         utility = left_bound
-        print("alpha = beta")
+        print("left {a} = right {b} ".format(a = left_bound, b = right_bound))
         return utility, move
     # find arbitrary move
     my_move = [] 
@@ -196,9 +196,9 @@ def double_oracle(state, alpha, beta, side):
     
 
     # key : actions i, value : [ui,j]
-    pIJ = alpha_beta_minimax_limit(state, 2, False, side, max_val, min_val, copy.deepcopy(my_move),
+    pIJ = alpha_beta_minimax_limit(state, 2, True, side, max_val, min_val, copy.deepcopy(my_move),
                                    copy.deepcopy(ad_move))[0]
-    oIJ = alpha_beta_minimax_limit(state, 2, True, side, max_val, min_val, copy.deepcopy(my_move),
+    oIJ = alpha_beta_minimax_limit(state, 2, False, side, max_val, min_val, copy.deepcopy(my_move),
                                    copy.deepcopy(ad_move))[0]
 
     # initialize the boundary of the first abitary actions
@@ -208,7 +208,7 @@ def double_oracle(state, alpha, beta, side):
 
     print("pIJ = {a}, oIJ = {b}, oij = {c}, pij ={d} ".format(a=pIJ, b=oIJ, c=o[0][0], d=p[0][0]))
 
-    while alpha != beta:
+    while alpha != beta or abs(alpha - beta) < 0.5 :
         print("enter_while")
 
         index_i = 0
@@ -268,6 +268,7 @@ def double_oracle(state, alpha, beta, side):
 
 
 def BR_max(state, alpha, y, side):
+    
     br = alpha
     move = None
 
@@ -299,7 +300,7 @@ def BR_max(state, alpha, y, side):
         j = 0
 
         if list(y.values())[j] > 0 and p[j] < o[j]:
-
+            print("pass")
             for action, prob in y.items():
 
                 pij_estimate = max(p[j], br - estimate_evaluation(y, o[j], action))
@@ -308,7 +309,7 @@ def BR_max(state, alpha, y, side):
                     continue
                 else:
                     new_state = new_turn(side, state, action_to_maxmal[i], action)
-                    utility[j] = double_oracle(new_state, p[j], o[j])[0]
+                    utility[j] = double_oracle(new_state, p[j], o[j], side)[0]
                     p[j] = utility[j]
                     o[j] = utility[j]
 
@@ -361,7 +362,7 @@ def BR_min(state, beta, x, side):
                     continue
                 else:
                     new_state = new_turn(side, state, action_to_minimal[i], action)
-                    utility[j] = double_oracle(new_state, p[j], o[j])[0]
+                    utility[j] = double_oracle(new_state, p[j], o[j], side)[0]
                     p[j] = utility[j]
                     o[j] = utility[j]
 
