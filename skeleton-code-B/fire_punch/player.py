@@ -98,7 +98,7 @@ def alpha_beta_minimax_limit(state, depth, max_player, side, alpha, beta, max_mo
         cur_max = float('-inf')
         best_move = None
         if len(max_move) > 0:
-            print(max_move)
+            #print(max_move)
             action = simulation(state, side, max_move)
             max_move.clear()
         else:
@@ -193,12 +193,12 @@ def double_oracle(state, alpha, beta, side):
     ad_move = [] 
     my_move += find_abitary_move(state,side)
     ad_move += find_abitary_move(state,oppnent)
-    new_state = simultaneous_move(state, my_move[0], ad_move[0], side)
+    
 
     # key : actions i, value : [ui,j]
-    pIJ = alpha_beta_minimax_limit(new_state, 2, False, side, max_val, min_val, copy.deepcopy(my_move),
+    pIJ = alpha_beta_minimax_limit(state, 2, False, side, max_val, min_val, copy.deepcopy(my_move),
                                    copy.deepcopy(ad_move))[0]
-    oIJ = alpha_beta_minimax_limit(new_state, 2, True, side, max_val, min_val, copy.deepcopy(my_move),
+    oIJ = alpha_beta_minimax_limit(state, 2, True, side, max_val, min_val, copy.deepcopy(my_move),
                                    copy.deepcopy(ad_move))[0]
 
     # initialize the boundary of the first abitary actions
@@ -433,8 +433,8 @@ player = Player("upper")
 player.state.operate(("THROW", "s", (4, -4)), 1)
 player.state.operate(("THROW", "p", (-4, 0)), 0)
 
-#print(double_oracle(player.state, -100, 100, 1))
-print(alpha_beta_minimax_limit(player.state, 3, True, 1, float('-inf'), float('inf'), [("SLIDE", (4,-4), (3, -4))], []))
+print(double_oracle(player.state, -100, 100, 1))
+#print(alpha_beta_minimax_limit(player.state, 3, True, 1, float('-inf'), float('inf'), [("SLIDE", (4,-4), (3, -4))], []))
 # print(alpha_beta_minimax(player.state, 4, True, 1, float('-inf'), float('inf')))
 # print(alpha_beta_minimax(player.state, 4, False, 1, float('-inf'), float('inf')))
 print("------end------")
