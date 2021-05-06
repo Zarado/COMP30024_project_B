@@ -1,9 +1,12 @@
-#from State import State
+from State import State
 #from Token import Token
-from fire_punch.gametheory import solve_game
+
+from gametheory import solve_game
 import numpy as np
 import copy
 import time
+import random
+
 
 
 def find_legal_operations(state, side):
@@ -51,6 +54,27 @@ def find_legal_operations(state, side):
                         action_list.get("SWING").append(("SWING",(token.coordinate),(swing)))
     
     return action_list
+
+def find_abitary_move(state,side):
+    
+
+    action_dict = find_legal_operations(state,side)
+
+    abitary = []
+
+    if len(action_dict["THROW"]) > 0:
+        throw = random.randint(0, len(action_dict["THROW"]) - 1)
+        abitary.append(action_dict["THROW"][throw])
+    
+    if len(action_dict["SLIDE"]) > 0:
+        slide = random.randint(0, len(action_dict["SLIDE"]) - 1)
+        abitary.append(action_dict["SLIDE"][slide])
+    
+    if len(action_dict["SWING"]) > 0:
+        swing = random.randint(0, len(action_dict["SWING"]) - 1)
+        abitary.append(action_dict["SWING"][swing])
+
+    return abitary
 
 
 
@@ -296,6 +320,8 @@ def estimate_evaluation(strategy, optimistic_list, exception):
 
 
 
+
+
         
 
 
@@ -334,3 +360,5 @@ print("test")
 
 print(compute_matrix(ts,0,1,maxival,minival)[2])
 '''
+te = State()
+find_abitary_move(te,1)

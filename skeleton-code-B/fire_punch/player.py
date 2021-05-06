@@ -10,6 +10,7 @@ from fire_punch.utils import compute_matrix
 from fire_punch.utils import get_expected_value
 from fire_punch.utils import estimate_evaluation
 from fire_punch.utils import new_turn
+from fire_punch.utils import find_abitary_move
 
 import numpy as np
 
@@ -171,7 +172,7 @@ def double_oracle(state, alpha, beta, side):
 
     oppnent = 0
     if not side:
-        oppnent
+        oppnent = 1
 
     if check_win(state):
         utility = evaluation(state, side)
@@ -187,8 +188,10 @@ def double_oracle(state, alpha, beta, side):
         print("alpha = beta")
         return utility, move
     # find arbitrary move
-    my_move = [('THROW', 'r', (4, -4))]
-    ad_move = [('THROW', 'r', (-4, 0))]
+    my_move = [] 
+    ad_move = [] 
+    my_move += find_abitary_move(state,side)
+    ad_move += find_abitary_move(state,oppnent)
     new_state = simultaneous_move(state, my_move[0], ad_move[0], side)
 
     # key : actions i, value : [ui,j]
