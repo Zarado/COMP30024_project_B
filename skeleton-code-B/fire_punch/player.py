@@ -70,7 +70,7 @@ class Player:
         """
 
         # move = alpha_beta_minimax(self.state, 2, True, self.side, float('-inf'), float('inf'))[1]
-        move = double_oracle(self.state, float('-inf'), float('inf'), player.side)[1]
+        move = double_oracle(self.state, float('-inf'), float('inf'), player.side, 4)[1]
 
         return move
 
@@ -168,14 +168,14 @@ def alpha_beta_minimax(state, depth, max_player, side, alpha, beta, count=0):
 
 
 # -------------------------------------------double oracle---------------------------------------------
-def double_oracle(state, alpha, beta, side):
+def double_oracle(state, alpha, beta, side, depth):
     utility = 0
 
     oppnent = 0
     if not side:
         oppnent = 1
 
-    if check_win(state):
+    if check_win(state) or depth == 0:
         utility = evaluation(state, side)
         print("cutoff test")
         return utility, state
@@ -221,7 +221,7 @@ def double_oracle(state, alpha, beta, side):
                 if p[index_i][index_j] < o[index_i][index_j]:
                     new_state = simultaneous_move(state, i, j, side)
 
-                    u_temp = double_oracle(new_state, alpha, beta, side)[0]
+                    u_temp = double_oracle(new_state, alpha, beta, side, depth - 1)[0]
 
                     p[index_i][index_j] = u_temp
                     o[index_i][index_j] = u_temp
@@ -309,7 +309,7 @@ def BR_max(state, alpha, y, side):
                     continue
                 else:
                     new_state = new_turn(side, state, action_to_maxmal[i], action)
-                    utility[j] = double_oracle(new_state, p[j], o[j], side)[0]
+                    utility[j] = double_oracle(new_state, p[j], o[j], side, 3)[0]
                     p[j] = utility[j]
                     o[j] = utility[j]
 
@@ -362,7 +362,7 @@ def BR_min(state, beta, x, side):
                     continue
                 else:
                     new_state = new_turn(side, state, action_to_minimal[i], action)
-                    utility[j] = double_oracle(new_state, p[j], o[j], side)[0]
+                    utility[j] = double_oracle(new_state, p[j], o[j], side, 3)[0]
                     p[j] = utility[j]
                     o[j] = utility[j]
 
@@ -434,7 +434,7 @@ player = Player("upper")
 player.state.operate(("THROW", "s", (4, -4)), 1)
 player.state.operate(("THROW", "p", (-4, 0)), 0)
 
-print(double_oracle(player.state, -100, 100, 1))
+print(double_oracle(player.state, -100, 100, 1, 3))
 #print(alpha_beta_minimax_limit(player.state, 3, True, 1, float('-inf'), float('inf'), [("SLIDE", (4,-4), (3, -4))], []))
 # print(alpha_beta_minimax(player.state, 4, True, 1, float('-inf'), float('inf')))
 # print(alpha_beta_minimax(player.state, 4, False, 1, float('-inf'), float('inf')))
