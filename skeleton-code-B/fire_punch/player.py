@@ -98,6 +98,7 @@ def alpha_beta_minimax_limit(state, depth, max_player, side, alpha, beta, max_mo
         cur_max = float('-inf')
         best_move = None
         if len(max_move) > 0:
+            print(max_move)
             action = simulation(state, side, max_move)
             max_move.clear()
         else:
@@ -116,7 +117,7 @@ def alpha_beta_minimax_limit(state, depth, max_player, side, alpha, beta, max_mo
         cur_min = float('inf')
         best_move = None
         if len(min_move) > 0:
-            action = simulation(state, side, min_move)
+            action = simulation(state, 1 - side, min_move)
             min_move.clear()
         else:
             action = simulation(state, 1 - side, [])
@@ -391,7 +392,7 @@ def simultaneous_move(state, move1, move2, side):
 def simulation(state, side, move):
     moves = []
     after_move = []
-    if (len(move) > 0):
+    if len(move) > 0:
         for action in move:
             new_state = copy.deepcopy(state)
             new_state.operate(action, side)
@@ -431,10 +432,9 @@ def check_win(state):
 player = Player("upper")
 player.state.operate(("THROW", "s", (4, -4)), 1)
 player.state.operate(("THROW", "p", (-4, 0)), 0)
-counter = [1]
 
-print(double_oracle(player.state, -100, 100, 1))
-
+#print(double_oracle(player.state, -100, 100, 1))
+print(alpha_beta_minimax_limit(player.state, 3, True, 1, float('-inf'), float('inf'), [("SLIDE", (4,-4), (3, -4))], []))
 # print(alpha_beta_minimax(player.state, 4, True, 1, float('-inf'), float('inf')))
 # print(alpha_beta_minimax(player.state, 4, False, 1, float('-inf'), float('inf')))
 print("------end------")
