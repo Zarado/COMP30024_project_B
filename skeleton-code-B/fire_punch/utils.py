@@ -1,6 +1,6 @@
 #from State import State
 #from Token import Token
-from gametheory import solve_game
+from fire_punch.gametheory import solve_game
 import numpy as np
 import copy
 import time
