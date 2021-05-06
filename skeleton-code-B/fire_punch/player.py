@@ -206,7 +206,7 @@ def double_oracle(state, alpha, beta, side):
 
     while alpha != beta:
         print("enter_while")
-        
+
         index_i = 0
 
         for i in my_move:
@@ -237,6 +237,7 @@ def double_oracle(state, alpha, beta, side):
 
         bsmax = BR_max(state, alpha, ad_strategy, side)
         bsmin = BR_min(state, beta, my_strategy, oppnent)
+        
 
         if bsmax[0] == None:
             print("bsmax none")
@@ -246,7 +247,11 @@ def double_oracle(state, alpha, beta, side):
             return max_val, my_move[-1]
 
         alpha = max(alpha, bsmin[1])
+
         beta = min(beta, bsmax[1])
+
+        print(alpha)
+        print(beta)
 
         # add the new action to the actions list
         my_move.append(bsmax[0])
@@ -264,8 +269,11 @@ def BR_max(state, alpha, y, side):
 
     action_to_maxmal = []
 
+
+
     for actions in find_legal_operations(state, side).values():
         action_to_maxmal += actions
+    
 
     p = []
     o = []
@@ -281,7 +289,9 @@ def BR_max(state, alpha, y, side):
         p = [piJ for i in range(0, len(y))]
         o = [oiJ for i in range(0, len(y))]
 
-        utility = np.zeros(len(y))
+        utility = [-1000 for i in range(0,len(y))]
+        utility = np.array(utility)
+
         j = 0
 
         if list(y.values())[j] > 0 and p[j] < o[j]:
@@ -301,7 +311,9 @@ def BR_max(state, alpha, y, side):
         # if have been calculate
 
         expected = get_expected_value(y, utility)
+        
         if expected > br:
+            
             move = action_to_maxmal[i]
             br = expected
 
@@ -331,7 +343,8 @@ def BR_min(state, beta, x, side):
         p = [piJ for i in range(0, len(x))]
         o = [oiJ for i in range(0, len(x))]
 
-        utility = np.zeros(len(x))
+        utility = [1000 for i in range(0,len(x))]
+        utility = np.array(utility)
         j = 0
 
         if list(x.values())[j] > 0 and p[j] < o[j]:
@@ -417,7 +430,7 @@ player.state.operate(("THROW", "s", (4, -4)), 1)
 player.state.operate(("THROW", "p", (-4, 0)), 0)
 counter = [1]
 
-print(double_oracle(player.state, float('-inf'), float('inf'), 1))
+print(double_oracle(player.state, -100, 100, 1))
 
 # print(alpha_beta_minimax(player.state, 4, True, 1, float('-inf'), float('inf')))
 # print(alpha_beta_minimax(player.state, 4, False, 1, float('-inf'), float('inf')))
