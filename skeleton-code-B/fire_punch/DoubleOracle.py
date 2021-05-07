@@ -9,7 +9,6 @@ from fire_punch.utils import estimate_evaluation
 from fire_punch.utils import new_turn
 from fire_punch.utils import find_abitary_move
 from fire_punch.player import check_win
-from fire_punch.player import alpha_beta_minimax_limit
 from fire_punch.player import alpha_beta_minimax
 from fire_punch.player import simultaneous_move
 import numpy as np
@@ -109,6 +108,46 @@ def double_oracle(state, alpha, beta, side, depth):
         print(my_move[-1])
 
     return utility, my_move[-1]
+def alpha_beta_minimax_limit(state, depth, max_player, side, alpha, beta, max_move, min_move):
+    if depth == 0 or check_win(state):
+        return evaluation(state, side), state
+
+    if max_player:
+        cur_max = float('-inf')
+        best_move = None
+        if len(max_move) > 0:
+            #print(max_move)
+            action = simulation(state, side, max_move)
+            max_move.clear()
+        else:
+            action = simulation(state, side, [])
+        for new_board in action:
+            utility = alpha_beta_minimax_limit(new_board[0], depth - 1, False, side, alpha, beta, max_move, min_move)[0]
+            cur_max = max(cur_max, utility)
+            if cur_max == utility:
+                best_move = new_board[1]
+            alpha = max(alpha, utility)
+            if beta <= alpha:
+                break
+        return cur_max, best_move,
+
+    else:
+        cur_min = float('inf')
+        best_move = None
+        if len(min_move) > 0:
+            action = simulation(state, 1 - side, min_move)
+            min_move.clear()
+        else:
+            action = simulation(state, 1 - side, [])
+        for new_board in action:
+            utility = alpha_beta_minimax_limit(new_board[0], depth - 1, True, side, alpha, beta, max_move, min_move)[0]
+            cur_min = min(utility, cur_min)
+            if cur_min == utility:
+                best_move = new_board[1]
+            beta = min(beta, utility)
+            if beta <= alpha:
+                break
+        return cur_min, best_move
 
 
 def BR_max(state, alpha, y, side):
