@@ -1,5 +1,6 @@
 from random_player.State import State
 from fire_punch.utils import find_legal_operations
+from fire_punch.utils import find_abitary_move
 
 import copy
 import random
@@ -40,25 +41,23 @@ class Player:
         of the game, select an action to play this turn.
         """
         # put your code here
-        after = find_legal_operations(self.state, self.side)
+        after = find_abitary_move(self.state, self.side)
 
-        lists = []
-        for list in after.values():
-            lists = lists + list
-        move = random.randint(0, len(lists) - 1)
+
+        move = random.randint(0, len(after) - 1)
 
         if self.side == 1:
-            while lists[move][2] in self.state.upper_dict.values():
-                move = random.randint(0, len(lists))
+            while after[move][2] in self.state.upper_dict.values():
+                move = random.randint(0, len(after))
 
         if self.side == 0:
-            while lists[move][2] in self.state.lower_dict.values():
-                move = random.randint(0, len(lists))
+            while after[move][2] in self.state.lower_dict.values():
+                move = random.randint(0, len(after))
         #for list in self.state.lower_dict.values():
          #   for tok in list:
           #      print(tok.type, tok.coordinate)
 
-        return lists[move]
+        return after[move]
 
     def update(self, opponent_action, player_action):
         """
