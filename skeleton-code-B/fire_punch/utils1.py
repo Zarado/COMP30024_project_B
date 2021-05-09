@@ -10,6 +10,8 @@ import random
 
 
 def find_legal_operations(state, side):
+
+    #throw should not be put in the first of the action since it is big 
     
     action_list = {"THROW":[], "SLIDE":[], "SWING":[]}
 
@@ -64,34 +66,65 @@ def find_advanced_operations(state, side):
 
     #generate the throw 
     Hex_range = range(-4,4 + 1)
-    type_token = ['r','s','p']
+    
+        
 
-    num_left = state.throws_left[side]
+    if side:
+        type_num_our  = [len(state[1].get("R") ), len(state[1].get("S") ),len(state[1].get("P") )]
+        type_num_ad   = [len(state[0].get("s") ), len(state[0].get("p") ),len(state[0].get("r") )]
+    else:
+        type_num_our  = [len(state[0].get("r") ), len(state[0].get("s") ),len(state[0].get("p") )]
+        type_num_ad   = [len(state[1].get("S") ), len(state[1].get("P") ),len(state[1].get("R") )]
+
+    type_diff = {"r":0,"s":0,"p":0}
+
+    i = 0
+
+    for t,dif in type_diff.items():
+
+        type_diff[t] = type_num_our[i] - type_num_ad[i]
+        i += 1
+    
+    
+    type_token = sorted(type_diff.keys(), reverse= True)
+    
+    
+    
+    token_list = []
+    if side == 1:
+        for type_tok in type_token:
+            token_list += state[1][type_tok.upper()]
+    else:
+        for type_tok in type_token:
+            token_list += state[1][type_tok]
+
+
+    #num_left = state.throws_left[side]
+    num_left = state[2][side]
 
     #side is 1/ 0 which denote if the palyer is upper or lower 
     #problem is how to reduce the size of it ?
 
+    left_bound  =  - 4  + (num_left - 1)*side
+    right_bound =   5 + (side - 1 )*(num_left - 1)
+
     if num_left > 0:
-        for r in range( - 4  + (num_left - 1)*side , 5 + (side - 1 )*(num_left - 1) ):
-            for q in Hex_range:
-                if -r - q in Hex_range:
-                    for token_type in type_token:
+        for token_type in type_token:
+            for r in range( left_bound,right_bound):
+                for q in Hex_range:
+                    if -r - q in Hex_range:
                         action_list.get("THROW").append(("THROW",token_type,(r,q)))
 
     
     #generate the slide 
 
-   
 
-    token_list = []
-    if side == 1:
-        for tok_list in state.upper_dict.values():
-            token_list += tok_list
-    else:
-        for tok_list in state.lower_dict.values():
-            token_list += tok_list
+    
+    
+    
 
-    #print(token_list)
+
+    #print("token_list = {a}".format(a = token_list))
     for token in token_list:
         to_slide  = adjacent_token(token)
         for to_go in to_slide:
@@ -146,7 +179,7 @@ def find_abitary_move(state,side):
 
 def adjacent_token(token):
     
-    print("token : {t}".format(t = token))
+    #print("token : {t}".format(t = token))
     
     Hex_range = range(-4,4 + 1)
 
@@ -184,7 +217,7 @@ def evaluation(state,side):
     
     weight1 = [-1,1]
     weight2 = [1,-1]
-    weight_token_difference = 1
+    weight_token_difference = 10
     weight_throw_left = 1
 
     upper_tokens = state[1]
@@ -439,3 +472,7 @@ print("test")
 
 compute_matrix(ts,0,1,maxival,minival)[2]
 '''
+ts = [{"r":[],"s":[[(-4,0),"s"]],"p":[[(-3,-1),"p"]] },{"R":[[(4,-4),"R"]],"S":[],"P":[[(3,-4),"P"]] },[7,7],[2,2]]
+
+
+print(find_advanced_operations(ts,1))
