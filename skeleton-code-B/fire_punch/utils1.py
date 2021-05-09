@@ -96,7 +96,7 @@ def find_advanced_operations(state, side):
             token_list += state[1][type_tok.upper()]
     else:
         for type_tok in type_token:
-            token_list += state[1][type_tok]
+            token_list += state[0][type_tok]
 
 
     #num_left = state.throws_left[side]
