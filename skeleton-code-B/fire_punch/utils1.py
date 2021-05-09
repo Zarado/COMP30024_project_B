@@ -13,7 +13,7 @@ def find_legal_operations(state, side):
 
     #throw should not be put in the first of the action since it is big 
     
-    action_list = {"THROW":[], "SLIDE":[], "SWING":[]}
+    action_list = {"SWING":[],"SLIDE":[],"THROW":[]}
 
     #generate the throw 
     Hex_range = range(-4,4 + 1)
@@ -62,7 +62,7 @@ def find_legal_operations(state, side):
 
 def find_advanced_operations(state, side):
     
-    action_list = {"THROW":[], "SLIDE":[], "SWING":[]}
+    action_list =  {"SWING":[],"SLIDE":[],"THROW":[]}
 
     #generate the throw 
     Hex_range = range(-4,4 + 1)
