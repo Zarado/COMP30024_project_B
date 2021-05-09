@@ -4,6 +4,7 @@ sys.path.append('..')
 
 from fire_punch.utils1 import find_legal_operations
 from fire_punch.utils1 import evaluation
+from fire_punch.utils1 import find_advanced_operations
 
 import copy
 
@@ -78,7 +79,7 @@ def simulation(state, side, move, ismax):
             battle(new_state, action[2])
             after_move.append([new_state, action, side])
     else:
-        for action in find_legal_operations(state, side).values():
+        for action in find_advanced_operations(state, side).values():
             moves = moves + action
 
         for action in moves:
