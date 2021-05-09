@@ -1,11 +1,11 @@
 from random_player.Token import Token
 
-
 class State:
     def __init__(self):
         self.upper_dict = {"R": [], "P": [], "S": []}
         self.lower_dict = {"r": [], "p": [], "s": []}
         self.throws_left = [9, 9]
+        self.token_left = [0, 0]
 
     def remove_coordinate(self, coordinate, spices):
         if spices == "all":
@@ -13,31 +13,39 @@ class State:
                 for token in self.upper_dict.get(key):
                     if token.coordinate == coordinate:
                         self.upper_dict.get(key).remove(token)
+                        self.token_left[1] -= 1
+
             for key in self.lower_dict.keys():
                 for token in self.lower_dict.get(key):
                     if token.coordinate == coordinate:
                         self.lower_dict.get(key).remove(token)
+                        self.token_left[0] -= 1
         else:
             for key in self.upper_dict.keys():
                 for token in self.upper_dict.get(key):
-                    if token.coordinate == coordinate and token.type.lower() == spices:
+                    if token.coordinate == coordinate and token.type == spices.upper():
                         self.upper_dict.get(key).remove(token)
+                        self.token_left[1] -= 1
+
             for key in self.lower_dict.keys():
                 for token in self.lower_dict.get(key):
-                    if token.coordinate == coordinate and token.type.lower() == spices:
+                    if token.coordinate == coordinate and token.type == spices.lower():
                         self.lower_dict.get(key).remove(token)
+                        self.token_left[0] -= 1
 
     def operate(self, action, side):
 
         if action[0] == "THROW":
             if side == 0:
-                new_token = Token(action[2], action[1])
+                new_token = Token(action[2], action[1].lower())
                 self.lower_dict.get(new_token.type).append(new_token)
                 self.throws_left[0] -= 1
+                self.token_left[0] += 1
             if side == 1:
                 new_token = Token(action[2], action[1].upper())
                 self.upper_dict.get(new_token.type).append(new_token)
                 self.throws_left[1] -= 1
+                self.token_left[1] += 1
 
         elif action[0] == "SLIDE" or "SWING":
 
@@ -64,7 +72,7 @@ class State:
         for dict_val in self.lower_dict.values():
             for token in dict_val:
                 if token.coordinate == coordinate:
-                    if token.type not in battle_list:
+                    if token.type.lower() not in battle_list:
                         battle_list.append(token.type.lower())
 
         if len(battle_list) == 3:
@@ -80,4 +88,3 @@ class State:
 
             if "p" in battle_list and "s" in battle_list:
                 self.remove_coordinate(coordinate, "p")
-

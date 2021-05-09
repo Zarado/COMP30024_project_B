@@ -1,6 +1,7 @@
 from random_player.State import State
 from fire_punch.utils import find_legal_operations
 from fire_punch.utils import find_abitary_move
+from fire_punch.utils import evaluation
 
 import copy
 import random
@@ -43,7 +44,6 @@ class Player:
         # put your code here
         after = find_abitary_move(self.state, self.side)
 
-
         move = random.randint(0, len(after) - 1)
 
         if self.side == 1:
@@ -53,9 +53,12 @@ class Player:
         if self.side == 0:
             while after[move][2] in self.state.lower_dict.values():
                 move = random.randint(0, len(after))
-        #for list in self.state.lower_dict.values():
-         #   for tok in list:
-          #      print(tok.type, tok.coordinate)
+        # for list in self.state.lower_dict.values():
+        #   for tok in list:
+        #      print(tok.type, tok.coordinate)
+
+        afters = simulation(self.state, self.side)
+        afters.sort(key=eval_sort)
 
         return after[move]
 
@@ -84,8 +87,12 @@ def simulation(state, side):
         new_state = copy.deepcopy(state)
         new_state.operate(action, side)
         new_state.battle(action[2])
-        after_move.append([new_state, action])
+        after_move.append([new_state, action, side])
     return after_move
+
+
+def eval_sort(elem):
+    return evaluation(elem[0], elem[2])
 
 
 player = Player("upper")
@@ -93,4 +100,4 @@ player.state.operate(("THROW", "s", (4, -4)), 1)
 player.state.operate(("THROW", "p", (-4, 0)), 0)
 print(player.action())
 print("------end------")
-#throw
+# throw

@@ -125,6 +125,7 @@ def alpha_beta_minimax(state, depth, max_player, side, alpha, beta, count=0):
                 best_move = new_board[1]
             alpha = max(alpha, utility)
             if beta <= alpha:
+                #print("-------------------------------------------------------------------------------")
                 break
         return cur_max, best_move
 
@@ -144,6 +145,7 @@ def alpha_beta_minimax(state, depth, max_player, side, alpha, beta, count=0):
                 best_move = new_board[1]
             beta = min(beta, utility)
             if beta <= alpha:
+                #print("-------------------------------------------------------------------------------")
                 break
         return cur_min, best_move
 
