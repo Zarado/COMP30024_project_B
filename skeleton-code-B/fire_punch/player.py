@@ -174,14 +174,12 @@ def check_win(state):
     return flag
 
 
-player = Player("upper")
-player.state.operate(("THROW", "s", (4, -4)), 1)
-player.state.operate(("THROW", "p", (-4, 0)), 0)
 
-start = time.time()
-print(alpha_beta_minimax(player.state, 3, True, 1, float('-inf'), float('inf')))
-end = time.time()
-print(end - start)
+list = [7,1,3,4]
+list = sorted(list, reverse=False)
+print(list)
+
+
 
 # print(alpha_beta_minimax(player.state, 4, False, 1, float('-inf'), float('inf')))
 print("------end------")

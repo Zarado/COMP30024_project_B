@@ -55,7 +55,7 @@ class Player:
                 move = random.randint(0, len(after))
         # for list in self.state.lower_dict.values():
         #   for tok in list:
-        #      print(tok.type, tok.coordinate)
+        #      print(tok.type, tok.coordinate)`
 
         afters = simulation(self.state, self.side)
         afters.sort(key=eval_sort)
@@ -94,10 +94,4 @@ def simulation(state, side):
 def eval_sort(elem):
     return evaluation(elem[0], elem[2])
 
-
-player = Player("upper")
-player.state.operate(("THROW", "s", (4, -4)), 1)
-player.state.operate(("THROW", "p", (-4, 0)), 0)
-print(player.action())
-print("------end------")
 # throw

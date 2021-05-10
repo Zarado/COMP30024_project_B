@@ -1,12 +1,13 @@
 import sys
 
 sys.path.append('..')
+
 from fire_punch.utils1 import find_legal_operations
 from fire_punch.utils1 import evaluation
-from fire_punch.utils1 import find_advanced_operations
+from fire_punch.utils1 import find_abitary_move
+import random
 
 import copy
-import time
 
 
 class Player:
@@ -44,14 +45,12 @@ class Player:
         of the game, select an action to play this turn.
         """
         # put your code here
-        if self.state[2][self.side] > 0:
+        after = find_abitary_move(self.state, self.side)
+        after_l = simulation(self.state, self.side, [], 1)
 
-            move = alpha_beta_minimax(self.state, 2, True, self.side, float('-inf'), float('inf'))[1]
-        else:
+        move = random.randint(0, len(after) - 1)
 
-            move = alpha_beta_minimax(self.state, 2, True, self.side, float('-inf'), float('inf'))[1]
-
-        return move
+        return after[move]
 
     def update(self, opponent_action, player_action):
         """
@@ -69,7 +68,7 @@ class Player:
         # update the graph
 
 
-def simulation(state, side, move, ismax, minimax, quick):
+def simulation(state, side, move, ismax):
     moves = []
     after_move = []
     if len(move) > 0:
@@ -79,22 +78,14 @@ def simulation(state, side, move, ismax, minimax, quick):
             battle(new_state, action[2])
             after_move.append([new_state, action, side])
     else:
-        if minimax == 1:
-            for action in find_legal_operations(state, side).values():
-                moves = moves + action
-        elif minimax == 0:
-            for action in find_legal_operations(state, side).values():
-                moves = moves + action
-
-        if quick:
-            moves = []
+        for action in find_legal_operations(state, side).values():
+            moves = moves + action
 
         for action in moves:
             new_state = copy.deepcopy(state)
             operate(new_state, action, side)
             battle(new_state, action[2])
             after_move.append([new_state, action, side])
-
 
     ratio = round(len(after_move) * 0.6)
 
@@ -113,7 +104,7 @@ def sort_evaluation(elem):
     return evaluation(elem[0], elem[2])
 
 
-def alpha_beta_minimax(state, depth, max_player, side, alpha, beta):
+def alpha_beta_minimax(state, depth, max_player, side, alpha, beta, count=0):
     if depth == 0 or check_win(state):
         return evaluation(state, side), state
 
@@ -121,39 +112,40 @@ def alpha_beta_minimax(state, depth, max_player, side, alpha, beta):
         cur_max = float('-inf')
         best_move = None
         if depth >= 2:
-            move = simulation(state, side, [], 1, 1, False)
+            move = simulation(state, side, [], 1)
         else:
-            move = simulation(state, side, [], -1, 1, False)
+            move = simulation(state, side, [], -1)
         for new_board in move:
-            utility = alpha_beta_minimax(new_board[0], depth - 1, False, side, alpha, beta)[0]
+            utility = alpha_beta_minimax(new_board[0], depth - 1, False, side, alpha, beta, count)[0]
+            count += 1
+            # print(count)
             cur_max = max(cur_max, utility)
             if cur_max == utility:
                 best_move = new_board[1]
             alpha = max(alpha, utility)
             if beta <= alpha:
-                print(beta, alpha)
-                pass
-                #break
+                #print("-------------------------------------------------------------------------------")
+                break
         return cur_max, best_move
 
     else:
         cur_min = float('inf')
         best_move = None
         if depth >= 2:
-            move = simulation(state, side, [], 0, 0, False)
+            move = simulation(state, side, [], 0)
         else:
-            move = simulation(state, side, [], -1, 0, False)
+            move = simulation(state, side, [], -1)
         for new_board in move:
-            utility = alpha_beta_minimax(new_board[0], depth - 1, True, side, alpha, beta)[0]
+            utility = alpha_beta_minimax(new_board[0], depth - 1, True, side, alpha, beta, count)[0]
+            count += 1
+            # print(count)
             cur_min = min(utility, cur_min)
             if cur_min == utility:
                 best_move = new_board[1]
             beta = min(beta, utility)
-
             if beta <= alpha:
-                print(beta, alpha)
-                pass
-                #break
+                #print("-------------------------------------------------------------------------------")
+                break
         return cur_min, best_move
 
 
@@ -218,6 +210,7 @@ def battle(state, coordinate):
 
 
 def remove_coordinate(state, coordinate, spices):
+
     if spices == "all":
 
         for spc in state[0].keys():
@@ -246,6 +239,7 @@ def remove_coordinate(state, coordinate, spices):
             state[1][spc] = action
 
 
+
 def check_win(state):
     flag = False
     upper_tokens = []
@@ -270,3 +264,6 @@ player = Player("upper")
 operate(player.state, ("THROW", "s", (4, -4)), 1)
 operate(player.state, ("THROW", "s", (4, -4)), 1)
 operate(player.state, ("THROW", "r", (4, -4)), 0)
+print(player.state)
+battle(player.state, (4, -4))
+print(player.state)

@@ -1,7 +1,7 @@
 #from State import State
 #from Token import Token
 
-from gametheory import solve_game
+from fire_punch.gametheory import solve_game
 import numpy as np
 import copy
 import time
@@ -60,7 +60,7 @@ def find_legal_operations(state, side):
     
     return action_list
 
-def find_advanced_operations(state, side):
+def find_advanced_operations(state, side, minimax):
     
     action_list =  {"SWING":[],"SLIDE":[],"THROW":[]}
 
@@ -86,7 +86,7 @@ def find_advanced_operations(state, side):
         i += 1
     
     
-    type_token = sorted(type_diff.keys(), reverse= True)
+    type_token = sorted(type_diff.keys(), reverse= minimax)
     
     
     
@@ -218,7 +218,7 @@ def evaluation(state,side):
     weight1 = [-1,1]
     weight2 = [1,-1]
     weight_token_difference = 10
-    weight_throw_left = 1
+    weight_throw_left = 5
 
     upper_tokens = state[1]
     lower_tokens = state[0]
@@ -264,17 +264,17 @@ def evaluation(state,side):
     evaluation_point += num_diff*weight_token_difference
 
     #predict part 
-    '''
-    throw_dif = state.throws_left[0] - state.throws_left[1]
+
+    throw_dif = state[2][0] - state[2][1]
     if side:
         throw_dif *= -1
     evaluation_point += throw_dif*weight_throw_left
-    '''
+
     return evaluation_point
 
 
 def find_relative_distance(upper_tokens, lower_tokens):
-    print("upper_tokens {a}  lower_tokens {b}".format(a =up_tokens, b = low_tokens ))
+    #print("upper_tokens {a}  lower_tokens {b}".format(a =up_tokens, b = low_tokens ))
 
     total_distance = 0
 
@@ -288,7 +288,7 @@ def find_relative_distance(upper_tokens, lower_tokens):
 
 
 def find_distance(start, end):
-    print("start {a}, end : {b}".format(a = start, b= end))
+    #print("start {a}, end : {b}".format(a = start, b= end))
 
     dis = abs(start[0] - end[0]) + abs(start[1] - end[1]) + abs(
         start[0] - end[0] + start[1] - end[1]) - max(
@@ -474,5 +474,3 @@ compute_matrix(ts,0,1,maxival,minival)[2]
 '''
 ts = [{"r":[],"s":[[(-4,0),"s"]],"p":[[(-3,-1),"p"]] },{"R":[[(4,-4),"R"]],"S":[],"P":[[(3,-4),"P"]] },[7,7],[2,2]]
 
-
-print(find_advanced_operations(ts,1))

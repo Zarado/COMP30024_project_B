@@ -1,1 +1,1 @@
-from random_player.r_player import Player
+from random_player.new_random_player import Player
