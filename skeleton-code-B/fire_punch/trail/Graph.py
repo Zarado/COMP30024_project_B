@@ -1,4 +1,4 @@
-from fire_punch.Hex import Hex
+from trail.Hex import Hex
 
 
 # Class graph is a hexagon that contains 61 hexagon units and the positional relationship between each unit.

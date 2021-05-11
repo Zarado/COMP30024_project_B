@@ -1,1 +1,1 @@
-from fire_punch.new_player import Player
+from fire_punch.player import Player

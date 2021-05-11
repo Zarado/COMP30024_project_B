@@ -1,4 +1,4 @@
-from fire_punch.Token import Token
+from trail.Token import Token
 
 
 class State:

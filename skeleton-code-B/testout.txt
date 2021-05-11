@@ -1,14 +1,1 @@
-upper win83
-upper win56
-upper win64
-upper win57
-upper win36
-upper win35
-upper win24
-upper win59
-upper win56
-upper win63
-upper win41
-draw19
-upper win62
-upper win47
+upper win39
