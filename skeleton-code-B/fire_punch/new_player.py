@@ -37,6 +37,7 @@ class Player:
         else:
             self.side = 0
             self.enemy = 1
+        self.turn = 0
 
     def action(self):
         """
@@ -46,10 +47,10 @@ class Player:
         # put your code here
         if self.state[2][self.side] > 0:
 
-            move = alpha_beta_minimax(self.state, 2, True, self.side, float('-inf'), float('inf'))[1]
+            move = alpha_beta_minimax(self.state, 2, True, self.side, -1000, 1000, self.turn)[1]
         else:
 
-            move = alpha_beta_minimax(self.state, 2, True, self.side, float('-inf'), float('inf'))[1]
+            move = alpha_beta_minimax(self.state, 2, True, self.side, -1000, 1000, self.turn)[1]
 
         return move
 
@@ -66,10 +67,11 @@ class Player:
         operate(self.state, player_action, self.side)
         battle(self.state, opponent_action[2])
         battle(self.state, player_action[2])
+        self.turn += 1
         # update the graph
 
 
-def simulation(state, side, move, ismax, minimax, quick):
+def simulation(state, side, move, ismax, minimax):
     moves = []
     after_move = []
     if len(move) > 0:
@@ -80,21 +82,23 @@ def simulation(state, side, move, ismax, minimax, quick):
             after_move.append([new_state, action, side])
     else:
         if minimax == 1:
-            for action in find_legal_operations(state, side).values():
+            for action in find_advanced_operations(state, side, False).values():
                 moves = moves + action
         elif minimax == 0:
-            for action in find_legal_operations(state, side).values():
+            for action in find_advanced_operations(state, side, True).values():
                 moves = moves + action
-
-        if quick:
-            moves = []
 
         for action in moves:
             new_state = copy.deepcopy(state)
             operate(new_state, action, side)
-            battle(new_state, action[2])
+            if minimax == 0:
+                for lists in new_state[0].values():
+                    for tok in lists:
+                        battle(new_state, tok[0])
+                for lists in new_state[1].values():
+                    for tok in lists:
+                        battle(new_state, tok[0])
             after_move.append([new_state, action, side])
-
 
     ratio = round(len(after_move) * 0.6)
 
@@ -113,7 +117,8 @@ def sort_evaluation(elem):
     return evaluation(elem[0], elem[2])
 
 
-def alpha_beta_minimax(state, depth, max_player, side, alpha, beta):
+
+def alpha_beta_minimax(state, depth, max_player, side, alpha, beta, turn):
     if depth == 0 or check_win(state):
         return evaluation(state, side), state
 
@@ -121,39 +126,36 @@ def alpha_beta_minimax(state, depth, max_player, side, alpha, beta):
         cur_max = float('-inf')
         best_move = None
         if depth >= 2:
-            move = simulation(state, side, [], 1, 1, False)
+            move = simulation(state, side, [], 1, 1)
         else:
-            move = simulation(state, side, [], -1, 1, False)
+            move = simulation(state, side, [], -1, 1)
         for new_board in move:
-            utility = alpha_beta_minimax(new_board[0], depth - 1, False, side, alpha, beta)[0]
+            utility = alpha_beta_minimax(new_board[0], depth - 1, False, side, alpha, beta, turn)[0]
             cur_max = max(cur_max, utility)
             if cur_max == utility:
                 best_move = new_board[1]
             alpha = max(alpha, utility)
+
             if beta <= alpha:
-                print(beta, alpha)
-                pass
-                #break
+                break
         return cur_max, best_move
 
     else:
         cur_min = float('inf')
         best_move = None
         if depth >= 2:
-            move = simulation(state, side, [], 0, 0, False)
+            move = simulation(state, 1 - side, [], 0, 0)
         else:
-            move = simulation(state, side, [], -1, 0, False)
+            move = simulation(state, 1 - side, [], -1, 0)
         for new_board in move:
-            utility = alpha_beta_minimax(new_board[0], depth - 1, True, side, alpha, beta)[0]
+            utility = alpha_beta_minimax(new_board[0], depth - 1, True, side, alpha, beta, turn)[0]
             cur_min = min(utility, cur_min)
             if cur_min == utility:
                 best_move = new_board[1]
             beta = min(beta, utility)
 
             if beta <= alpha:
-                print(beta, alpha)
-                pass
-                #break
+                break
         return cur_min, best_move
 
 
@@ -269,4 +271,6 @@ def check_win(state):
 player = Player("upper")
 operate(player.state, ("THROW", "s", (4, -4)), 1)
 operate(player.state, ("THROW", "s", (4, -4)), 1)
-operate(player.state, ("THROW", "r", (4, -4)), 0)
+operate(player.state, ("THROW", "r", (-4, 0)), 0)
+start = time.time()
+print(time.time() - start)

@@ -347,19 +347,19 @@ class Game:
         # condition 1: one player has no remaining throws or tokens
         if up_notoks and lo_notoks:
             file = open('./testout.txt', 'a')
-            file.write("draw\n")
+            file.write("draw{a}\n".format(a = self.nturns))
             file.close()
             self.result = "draw: no remaining tokens or throws"
             return
         if up_notoks:
             file = open('./testout.txt', 'a')
-            file.write("lower win\n")
+            file.write("lower win{a}\n".format(a = self.nturns))
             file.close()
             self.result = "winner: lower"
             return
         if lo_notoks:
             file = open('./testout.txt', 'a')
-            file.write("upper win\n")
+            file.write("upper win{a}\n".format(a = self.nturns))
             file.close()
             self.result = "winner: upper"
             return
@@ -368,7 +368,7 @@ class Game:
         # condition 2: both players have an invincible token
         if up_invinc and lo_invinc:
             file = open('./testout.txt', 'a')
-            file.write("draw\n")
+            file.write("draw{a}\n".format(a = self.nturns))
             file.close()
             self.result = "draw: both players have an invincible token"
             return
@@ -377,13 +377,13 @@ class Game:
         #              only one token remaining (not invincible by 2)
         if up_invinc and lo_onetok:
             file = open('./testout.txt', 'a')
-            file.write("upper win\n")
+            file.write("upper win{a}\n".format(a = self.nturns))
             file.close()
             self.result = "winner: upper"
             return
         if lo_invinc and up_onetok:
             file = open('./testout.txt', 'a')
-            file.write("lower win\n")
+            file.write("lower win{a}\n".format(a = self.nturns))
             file.close()
             self.result = "winner: lower"
             return
@@ -391,7 +391,7 @@ class Game:
         # condition 4: the same state has occurred for a 3rd time
         if self.history[state] >= 3:
             file = open('./testout.txt', 'a')
-            file.write("draw\n")
+            file.write("draw{a}\n".format(a = self.nturns))
             file.close()
 
             self.result = "draw: same game state occurred for 3rd time"
@@ -400,7 +400,7 @@ class Game:
         # condition 5: the players have had their 360th turn without end
         if self.nturns >= _MAX_TURNS:
             file = open('./testout.txt', 'a')
-            file.write("draw\n")
+            file.write("draw{a}\n".format(a = self.nturns))
             file.close()
             self.result = "draw: maximum number of turns reached"
             return
