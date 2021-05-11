@@ -1,4 +1,3 @@
-
 from fire_punch.utils1 import find_legal_operations
 from fire_punch.utils1 import evaluation
 from fire_punch.utils1 import find_advanced_operations
@@ -42,12 +41,8 @@ class Player:
         of the game, select an action to play this turn.
         """
         # put your code here
-        if self.state[2][self.side] > 0:
 
-            move = alpha_beta_minimax(self.state, 2, True, self.side, -1000, 1000, self.turn)[1]
-        else:
-
-            move = alpha_beta_minimax(self.state, 2, True, self.side, -1000, 1000, self.turn)[1]
+        move = alpha_beta_minimax(self.state, 2, True, self.side, -1000, 1000, self.turn)[1]
 
         return move
 
@@ -68,6 +63,12 @@ class Player:
         # update the graph
 
 
+"""
+produce simulation boards according to given actions, and sdo shallow search and ordering depend
+on ismax and minimax variable.
+"""
+
+
 def simulation(state, side, move, ismax, minimax):
     moves = []
     after_move = []
@@ -82,7 +83,7 @@ def simulation(state, side, move, ismax, minimax):
             for action in find_advanced_operations(state, side, False).values():
                 moves = moves + action
         elif minimax == 0:
-            for action in find_legal_operations(state, side).values():
+            for action in find_advanced_operations(state, side, True).values():
                 moves = moves + action
 
         for action in moves:
@@ -110,9 +111,16 @@ def simulation(state, side, move, ismax, minimax):
     return after_move
 
 
+"""
+sorting helper with evaluation point
+"""
+
+
 def sort_evaluation(elem):
     return evaluation(elem[0], elem[2])
 
+
+"""alpha beta pruning and minimax"""
 
 
 def alpha_beta_minimax(state, depth, max_player, side, alpha, beta, turn):
@@ -133,7 +141,7 @@ def alpha_beta_minimax(state, depth, max_player, side, alpha, beta, turn):
                 best_move = new_board[1]
             alpha = max(alpha, utility)
 
-            if beta <= alpha:
+            if beta <= alpha or turn > 50:
                 break
         return cur_max, best_move
 
@@ -151,9 +159,12 @@ def alpha_beta_minimax(state, depth, max_player, side, alpha, beta, turn):
                 best_move = new_board[1]
             beta = min(beta, utility)
 
-            if beta <= alpha:
+            if beta <= alpha or turn > 50:
                 break
         return cur_min, best_move
+
+
+"""perform an action on given state"""
 
 
 def operate(state, action, side):
@@ -186,6 +197,9 @@ def operate(state, action, side):
                         break
 
 
+"""battle on the given hex in the board"""
+
+
 def battle(state, coordinate):
     battle_list = []
 
@@ -216,6 +230,9 @@ def battle(state, coordinate):
             remove_coordinate(state, coordinate, "p")
 
 
+"""remove required token according to the coordinate"""
+
+
 def remove_coordinate(state, coordinate, spices):
     if spices == "all":
 
@@ -243,6 +260,9 @@ def remove_coordinate(state, coordinate, spices):
             action = [token for token in state[1].get(spc) if token[0] != coordinate or token[1] != spices.upper()]
             state[3][1] = state[3][1] - (prev_len - len(action))
             state[1][spc] = action
+
+
+""" check if the game has terminated"""
 
 
 def check_win(state):

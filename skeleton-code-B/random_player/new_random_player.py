@@ -118,13 +118,12 @@ def alpha_beta_minimax(state, depth, max_player, side, alpha, beta, count=0):
         for new_board in move:
             utility = alpha_beta_minimax(new_board[0], depth - 1, False, side, alpha, beta, count)[0]
             count += 1
-            # print(count)
+
             cur_max = max(cur_max, utility)
             if cur_max == utility:
                 best_move = new_board[1]
             alpha = max(alpha, utility)
             if beta <= alpha:
-                #print("-------------------------------------------------------------------------------")
                 break
         return cur_max, best_move
 
@@ -144,7 +143,6 @@ def alpha_beta_minimax(state, depth, max_player, side, alpha, beta, count=0):
                 best_move = new_board[1]
             beta = min(beta, utility)
             if beta <= alpha:
-                #print("-------------------------------------------------------------------------------")
                 break
         return cur_min, best_move
 
@@ -260,10 +258,4 @@ def check_win(state):
     return flag
 
 
-player = Player("upper")
-operate(player.state, ("THROW", "s", (4, -4)), 1)
-operate(player.state, ("THROW", "s", (4, -4)), 1)
-operate(player.state, ("THROW", "r", (4, -4)), 0)
-print(player.state)
-battle(player.state, (4, -4))
-print(player.state)
+

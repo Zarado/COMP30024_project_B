@@ -3,17 +3,16 @@ import sys
 sys.path.append('../..')
 
 from trail.State import State
-from fire_punch.utils import find_legal_operations
-from fire_punch.utils import evaluation
-from fire_punch.utils import compute_matrix
-from fire_punch.utils import get_expected_value
-from fire_punch.utils import new_turn
-from fire_punch.utils import find_abitary_move
-from fire_punch.utils import simulate_turn
+from fire_punch.trail.utils import find_legal_operations
+from fire_punch.trail.utils import evaluation
+from fire_punch.trail.utils import compute_matrix
+from fire_punch.trail.utils import get_expected_value
+from fire_punch.trail.utils import new_turn
+from fire_punch.trail.utils import find_abitary_move
+from fire_punch.trail.utils import simulate_turn
+from fire_punch.trail.utils import estimate_evaluation
 import random
-
 import numpy as np
-
 import copy
 
 
