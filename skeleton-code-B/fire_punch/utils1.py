@@ -278,13 +278,17 @@ def find_relative_distance(upper_tokens, lower_tokens):
 
     total_distance = 0
 
+    max_dis = 8
+
 
     for our in upper_tokens:
         for opponent in lower_tokens:
-            total_distance += find_distance(our[0],opponent[0])
+            temp = find_distance(our[0],opponent[0])
+            total_distance += temp * ( 1- (8 - temp)*0.1 )
 
     #negative relative 
-    return 10 - (total_distance/(len(upper_tokens)*len(lower_tokens)))
+    relative_distance =  total_distance/(len(upper_tokens)*len(lower_tokens))
+    return 10 - relative_distance
 
 
 def find_distance(start, end):
