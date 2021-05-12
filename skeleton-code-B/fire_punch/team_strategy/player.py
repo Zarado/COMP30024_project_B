@@ -1,5 +1,5 @@
-from fire_punch.utils1 import evaluation
-from fire_punch.utils1 import find_advanced_operations
+from fire_punch.team_strategy.utils1 import evaluation
+from fire_punch.team_strategy.utils1 import find_advanced_operations
 import copy
 import time
 

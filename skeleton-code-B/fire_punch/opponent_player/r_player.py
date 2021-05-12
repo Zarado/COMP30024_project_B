@@ -1,7 +1,7 @@
-from random_player.State import State
-from fire_punch.trail.utils import find_legal_operations
-from fire_punch.trail.utils import find_abitary_move
-from fire_punch.trail.utils import evaluation
+from opponent_player.State import State
+from team_strategy.utils1 import find_legal_operations
+from team_strategy.utils1 import find_abitary_move
+from team_strategy.utils1 import evaluation
 
 import copy
 import random

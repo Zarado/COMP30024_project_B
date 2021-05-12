@@ -3,8 +3,8 @@ import sys
 sys.path.append('../..')
 
 from trail.State import State
-from fire_punch.trail.utils import find_legal_operations
-from fire_punch.trail.utils import evaluation
+from team_strategy import find_legal_operations
+from team_strategy import evaluation
 
 import copy
 

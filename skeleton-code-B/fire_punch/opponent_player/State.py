@@ -1,4 +1,4 @@
-from random_player.Token import Token
+from opponent_player.Token import Token
 
 class State:
     def __init__(self):

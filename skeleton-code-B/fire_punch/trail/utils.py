@@ -2,7 +2,7 @@
 # from State import State
 # from Token import Token
 
-from fire_punch.trail.gametheory import solve_game
+from team_strategy import solve_game
 import numpy as np
 import copy
 import time
