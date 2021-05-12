@@ -1,7 +1,7 @@
 from random_player.State import State
-from fire_punch.utils import find_legal_operations
-from fire_punch.utils import find_abitary_move
-from fire_punch.utils import evaluation
+from fire_punch.trail.utils import find_legal_operations
+from fire_punch.trail.utils import find_abitary_move
+from fire_punch.trail.utils import evaluation
 
 import copy
 import random

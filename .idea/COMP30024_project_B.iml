@@ -5,7 +5,7 @@
       <sourceFolder url="file://$MODULE_DIR$/skeleton-code-B/referee" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/skeleton-code-B/fire_punch" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/skeleton-code-B" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/skeleton-code-B/random_player" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/skeleton-code-B/fire_punch/random_player" isTestSource="false" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.8 (pythonProject1)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

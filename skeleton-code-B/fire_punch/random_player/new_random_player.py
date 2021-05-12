@@ -1,6 +1,6 @@
 import sys
 
-sys.path.append('..')
+sys.path.append('../..')
 
 from fire_punch.utils1 import find_legal_operations
 from fire_punch.utils1 import evaluation

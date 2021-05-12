@@ -3,7 +3,7 @@ import time
 
 i = 0
 t = []
-while i < 50:
+while i < 1:
     start = time.time()
     pivot = main()
     end = time.time()
